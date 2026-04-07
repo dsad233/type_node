@@ -1,13 +1,14 @@
 import { BadRequest, NotFound } from "http-errors";
 import { AuthRepository } from "./auth.repository";
 import { RedisService } from "../redis/redis.service";
-import { comparePassword, regEx, TokenType } from "../common/utils";
+import { comparePassword, regEx } from "../common/utils";
 import { ICreateUserDto, ISignInDto } from "./dto";
 import { JwtService } from "../jwt/jwt.service";
 import {
   JWT_ACCESS_SECRET_KEY,
   JWT_REFRESH_SECRET_KEY,
 } from "../common/configs/keys";
+import { TYPE } from "../common/libs";
 
 export class AuthService {
   private readonly authRepository: AuthRepository;
@@ -82,7 +83,7 @@ export class AuthService {
           gender: user.gender,
         },
         JWT_ACCESS_SECRET_KEY,
-        TokenType.ACCESS,
+        TYPE.TokenType.ACCESS,
       );
       const refreshToken = await this.jwtService.sign(
         {
@@ -93,7 +94,7 @@ export class AuthService {
           gender: user.gender,
         },
         JWT_REFRESH_SECRET_KEY,
-        TokenType.REFRESH,
+        TYPE.TokenType.REFRESH,
       );
 
       return { access_token: accessToken, refresh_token: refreshToken };
@@ -118,7 +119,7 @@ export class AuthService {
         gender: user.gender,
       },
       JWT_ACCESS_SECRET_KEY,
-      TokenType.ACCESS,
+      TYPE.TokenType.ACCESS,
     );
     const refreshToken = await this.jwtService.sign(
       {
@@ -129,7 +130,7 @@ export class AuthService {
         gender: user.gender,
       },
       JWT_REFRESH_SECRET_KEY,
-      TokenType.REFRESH,
+      TYPE.TokenType.REFRESH,
     );
 
     return { access_token: accessToken, refresh_token: refreshToken };

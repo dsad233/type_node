@@ -33,9 +33,3 @@ export const regEx = {
   phoneNumber:
     /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/,
 };
-
-// 토큰 타입
-export enum TokenType {
-  ACCESS = "ACCESS",
-  REFRESH = "REFRESH",
-}
