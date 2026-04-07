@@ -12,16 +12,16 @@ export class AuthController {
   }
 
   // 유저 생성
-  create = async (
+  signUp = async (
     req: Request,
     res: Response,
     next: NextFunction,
   ): Promise<Response<Object>> => {
     const dto = await CreateUserDto(req.body);
 
-    await this.authService.create(dto);
+    await this.authService.signUp(dto);
 
-    return res.status(StatusCodes.CREATED).json({ message: "유저 생성 완료" });
+    return res.status(StatusCodes.CREATED).json({ message: "회원 가입 완료." });
   };
 
   signIn = async (
@@ -35,6 +35,7 @@ export class AuthController {
 
     return res.status(StatusCodes.OK).json({
       message: "로그인 완료.",
+      data: tokens,
     });
   };
 }

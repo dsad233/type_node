@@ -19,6 +19,9 @@ const authRepository = new AuthRepository(prisma);
 const authService = new AuthService(authRepository, redisService, jwtService);
 const authController = new AuthController(authService);
 
-router.post("", AsyncWrapper(authController.create));
+// 회원가입
+router.post("/signup", AsyncWrapper(authController.signUp));
+// 로그인
+router.post("/signin", AsyncWrapper(authController.signIn));
 
 export default router;

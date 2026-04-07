@@ -1,4 +1,4 @@
-import { PrismaClient } from "../../generated/prisma/client";
+import { Gender, PrismaClient } from "../../generated/prisma/client";
 import { hashPassword } from "../common/utils";
 import { ICreateUserDto } from "./dto/createUserDto";
 
@@ -10,7 +10,7 @@ export class AuthRepository {
   }
 
   // 중복 이메일 유무 체크
-  existEmail = async (email: string): Promise<Object | null> => {
+  existEmail = async (email: string): Promise<{ email: string } | null> => {
     return await this.prisma.user.findUnique({
       where: { email: email },
       select: { email: true },
@@ -18,7 +18,9 @@ export class AuthRepository {
   };
 
   // 중복 아이디 유무 체크
-  existUserId = async (loginId: string): Promise<Object | null> => {
+  existUserId = async (
+    loginId: string,
+  ): Promise<{ loginId: string } | null> => {
     return await this.prisma.user.findUnique({
       where: { loginId: loginId },
       select: { loginId: true },
@@ -26,7 +28,9 @@ export class AuthRepository {
   };
 
   // 중복 닉네임 유무 체크
-  existNickname = async (nickname: string): Promise<Object | null> => {
+  existNickname = async (
+    nickname: string,
+  ): Promise<{ nickname: string } | null> => {
     return await this.prisma.user.findUnique({
       where: { nickname: nickname },
       select: { nickname: true },
@@ -34,7 +38,9 @@ export class AuthRepository {
   };
 
   // 중복 전화번호 유무 체크
-  existPhoneNumber = async (phoneNumber: string): Promise<Object | null> => {
+  existPhoneNumber = async (
+    phoneNumber: string,
+  ): Promise<{ phoneNumber: string | null } | null> => {
     return await this.prisma.user.findUnique({
       where: { phoneNumber: phoneNumber },
       select: { phoneNumber: true },
@@ -59,11 +65,25 @@ export class AuthRepository {
   };
 
   // 이메일 로그인
-  emailSigIn = async (email: string): Promise<{ password: string } | null> => {
+  emailSigIn = async (
+    email: string,
+  ): Promise<{
+    id: string;
+    email: string;
+    password: string;
+    name: string;
+    nickname: string;
+    gender: Gender | null;
+  } | null> => {
     return await this.prisma.user.findFirst({
       where: { email: email },
       select: {
+        id: true,
+        email: true,
         password: true,
+        name: true,
+        nickname: true,
+        gender: true,
       },
     });
   };
@@ -71,13 +91,25 @@ export class AuthRepository {
   // 아이디 로그인
   loginIdSigIn = async (
     loginId: string,
-  ): Promise<{ password: string } | null> => {
+  ): Promise<{
+    id: string;
+    loginId: string;
+    password: string;
+    name: string;
+    nickname: string;
+    gender: Gender | null;
+  } | null> => {
     return await this.prisma.user.findFirst({
       where: {
         loginId: loginId,
       },
       select: {
+        id: true,
+        loginId: true,
         password: true,
+        name: true,
+        nickname: true,
+        gender: true,
       },
     });
   };

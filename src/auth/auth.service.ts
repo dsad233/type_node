@@ -24,7 +24,7 @@ export class AuthService {
   }
 
   // 유저 생성
-  create = async (dto: ICreateUserDto): Promise<undefined> => {
+  signUp = async (dto: ICreateUserDto): Promise<void> => {
     const alreadyEmail = await this.authRepository.existEmail(dto.email);
     if (alreadyEmail) {
       throw new BadRequest("이미 존재하는 이메일 입니다.");
@@ -56,7 +56,9 @@ export class AuthService {
   };
 
   // 로그인
-  signIn = async (dto: ISignInDto) => {
+  signIn = async (
+    dto: ISignInDto,
+  ): Promise<{ access_token: string; refresh_token: string }> => {
     // 입력 받은 값이 이메일 이라면,
     if (dto.loginId?.match(regEx.email)) {
       const user = await this.authRepository.emailSigIn(dto.loginId);
@@ -71,10 +73,30 @@ export class AuthService {
         );
       }
 
-      await this.jwtService.sign({}, JWT_ACCESS_SECRET_KEY, TokenType.ACCESS);
-      await this.jwtService.sign({}, JWT_REFRESH_SECRET_KEY, TokenType.REFRESH);
+      const accessToken = await this.jwtService.sign(
+        {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          nickname: user.nickname,
+          gender: user.gender,
+        },
+        JWT_ACCESS_SECRET_KEY,
+        TokenType.ACCESS,
+      );
+      const refreshToken = await this.jwtService.sign(
+        {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          nickname: user.nickname,
+          gender: user.gender,
+        },
+        JWT_REFRESH_SECRET_KEY,
+        TokenType.REFRESH,
+      );
 
-      return;
+      return { access_token: accessToken, refresh_token: refreshToken };
     }
 
     const user = await this.authRepository.loginIdSigIn(dto.loginId);
@@ -87,9 +109,29 @@ export class AuthService {
       throw new BadRequest("패스워드가 일치하지 않습니다. 다시 시도해 주세요.");
     }
 
-    await this.jwtService.sign({}, JWT_ACCESS_SECRET_KEY, TokenType.ACCESS);
-    await this.jwtService.sign({}, JWT_REFRESH_SECRET_KEY, TokenType.REFRESH);
+    const accessToken = await this.jwtService.sign(
+      {
+        id: user.id,
+        loginId: user.loginId,
+        name: user.name,
+        nickname: user.nickname,
+        gender: user.gender,
+      },
+      JWT_ACCESS_SECRET_KEY,
+      TokenType.ACCESS,
+    );
+    const refreshToken = await this.jwtService.sign(
+      {
+        id: user.id,
+        loginId: user.loginId,
+        name: user.name,
+        nickname: user.nickname,
+        gender: user.gender,
+      },
+      JWT_REFRESH_SECRET_KEY,
+      TokenType.REFRESH,
+    );
 
-    return;
+    return { access_token: accessToken, refresh_token: refreshToken };
   };
 }
