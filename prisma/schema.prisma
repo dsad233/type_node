@@ -92,7 +92,7 @@ model Like {
   // Posts many to one
   // Comments many to one
 
-  @@map(name: "Likes")
+  @@map(name: "likes")
 }
 
 
