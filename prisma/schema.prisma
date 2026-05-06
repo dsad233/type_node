@@ -66,7 +66,7 @@ enum Authority {
 
 model Post {
   id String  @id @default(uuid())
-  title String 
+  title String @db.VarChar(300)
   context String? @db.Text
   image String?
   isPublic State @default(TRUE) @map("is_public")
