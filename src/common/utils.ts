@@ -1,5 +1,6 @@
-import bcrypt from "bcrypt";
-import { BCYPT_PASSWORD_SALT } from "./configs/keys";
+import bcrypt from 'bcrypt';
+import { BCYPT_PASSWORD_SALT } from './configs/keys';
+import { Gender, State } from '../../generated/prisma/enums';
 
 /**
  * 패스워드 관련
@@ -33,3 +34,17 @@ export const regEx = {
   phoneNumber:
     /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/,
 };
+
+// Type
+// export type ReqUser = {
+//   id: string;
+//   email: string;
+//   loginId: string;
+//   name: string;
+//   nickname: string;
+//   image: string | null;
+//   gender: Gender | null;
+//   birthDay: Date | null;
+//   phoneNumber: string | null;
+//   isPublic: State;
+// };

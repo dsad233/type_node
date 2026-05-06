@@ -1,6 +1,6 @@
-import { Gender, PrismaClient } from "../../generated/prisma/client";
-import { hashPassword } from "../common/utils";
-import { ICreateUserDto } from "./dto/createUserDto";
+import { PrismaClient } from '../../generated/prisma/client';
+import { hashPassword } from '../common/utils';
+import { ICreateUserDto } from './dto/createUserDto';
 
 export class AuthRepository {
   private prisma: PrismaClient;
@@ -18,7 +18,7 @@ export class AuthRepository {
   };
 
   // 중복 아이디 유무 체크
-  existUserId = async (
+  existLoginId = async (
     loginId: string,
   ): Promise<{ loginId: string } | null> => {
     return await this.prisma.user.findUnique({
@@ -60,6 +60,9 @@ export class AuthRepository {
         gender: dto.gender,
         birthDay: dto.birthDay ?? null,
         phoneNumber: dto.phoneNumber ?? null,
+        roles: {
+          create: {},
+        },
       },
     });
   };
@@ -71,9 +74,6 @@ export class AuthRepository {
     id: string;
     email: string;
     password: string;
-    name: string;
-    nickname: string;
-    gender: Gender | null;
   } | null> => {
     return await this.prisma.user.findFirst({
       where: { email: email },
@@ -81,9 +81,6 @@ export class AuthRepository {
         id: true,
         email: true,
         password: true,
-        name: true,
-        nickname: true,
-        gender: true,
       },
     });
   };
@@ -95,9 +92,6 @@ export class AuthRepository {
     id: string;
     loginId: string;
     password: string;
-    name: string;
-    nickname: string;
-    gender: Gender | null;
   } | null> => {
     return await this.prisma.user.findFirst({
       where: {
@@ -107,9 +101,52 @@ export class AuthRepository {
         id: true,
         loginId: true,
         password: true,
-        name: true,
-        nickname: true,
-        gender: true,
+      },
+    });
+  };
+
+  // 이메일 유저 페이로드 검증
+  verifyEmailPayload = async (
+    id: string,
+    email: string,
+  ): Promise<{ id: string; email: string } | null> => {
+    return await this.prisma.user.findFirst({
+      where: {
+        id: id,
+        email: email,
+      },
+      select: {
+        id: true,
+        email: true,
+      },
+    });
+  };
+
+  // loginId 유저 페이로드 검증
+  verifyLoginIdPayload = async (
+    id: string,
+    loginId: string,
+  ): Promise<{ id: string; loginId: string } | null> => {
+    return await this.prisma.user.findFirst({
+      where: {
+        id: id,
+        email: loginId,
+      },
+      select: {
+        id: true,
+        loginId: true,
+      },
+    });
+  };
+
+  // 패스워드 변경
+  updatePassword = async (id: string, newPassword: string): Promise<void> => {
+    await this.prisma.user.update({
+      where: {
+        id: id,
+      },
+      data: {
+        password: await hashPassword(newPassword),
       },
     });
   };
