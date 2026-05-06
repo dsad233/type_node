@@ -51,7 +51,7 @@ export class JwtService {
         const payload = jwt.verify(token, JWT_ACCESS_SECRET_KEY) as JwtPayload;
 
         const session = await redis.get(
-          `${TYPE.PrefixType.USERS}:${TYPE.TokenType.REFRESH}:id=${payload.id}`,
+          `${TYPE.PrefixType.USERS}:${TYPE.TokenType.ACCESS}:id=${payload.id}`,
         );
 
         if (token !== session) {

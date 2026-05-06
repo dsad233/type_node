@@ -167,7 +167,7 @@ export class AuthService {
   };
 
   // 토큰 재발급
-  reisSue = async (refreshToken: string) => {
+  reissue = async (refreshToken: string) => {
     const payload = await this.jwtService.verify(
       refreshToken,
       TYPE.TokenType.REFRESH,

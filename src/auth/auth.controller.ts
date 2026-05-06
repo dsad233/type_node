@@ -30,7 +30,12 @@ export class AuthController {
     req: Request,
     res: Response,
     next: NextFunction,
-  ): Promise<Response<{ message: string; data: string }>> => {
+  ): Promise<
+    Response<{
+      message: string;
+      data: { access_token: string; refresh_token: string };
+    }>
+  > => {
     const dto = await SignInDto(req.body);
 
     const tokens = await this.authService.signIn(dto);
@@ -52,14 +57,14 @@ export class AuthController {
   };
 
   // 토큰 재발급
-  reisSue = async (
+  reissue = async (
     req: Request,
     res: Response,
     next: NextFunction,
   ): Promise<Response<{ message: string }>> => {
     const { refreshToken } = req.body;
 
-    const tokens = await this.authService.reisSue(refreshToken);
+    const tokens = await this.authService.reissue(refreshToken);
 
     return res
       .status(StatusCodes.OK)

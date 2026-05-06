@@ -1,5 +1,5 @@
 import { BadRequest } from 'http-errors';
-import { Gender } from '../../../generated/prisma/enums';
+import { Gender, State } from '../../../generated/prisma/enums';
 import { regEx } from '../../common/utils';
 
 export type ICreateUserDto = {
@@ -9,9 +9,10 @@ export type ICreateUserDto = {
   name: string;
   nickname: string;
   image: string | null;
-  gender: Gender;
+  gender: Gender | null;
   birthDay: Date | null;
   phoneNumber: string | null;
+  isPublic: State;
 };
 
 export async function CreateUserDto(
@@ -27,6 +28,7 @@ export async function CreateUserDto(
     gender,
     birthDay,
     phoneNumber,
+    isPublic,
   } = body;
   // 입력 유무 검증
   if (!email) {
@@ -47,6 +49,19 @@ export async function CreateUserDto(
 
   if (!nickname) {
     throw new BadRequest('닉네임을 입력해 주세요.');
+  }
+
+  if (isPublic) {
+    const result = [];
+    for (let prop in State) {
+      result.push(prop);
+    }
+
+    if (!result.includes(isPublic)) {
+      throw new BadRequest(
+        '공개, 비공개 여부가 올바르지 않은 값 입니다. 다시 입력해 주세요.',
+      );
+    }
   }
 
   // 데이터 저장 길이 검증
@@ -74,7 +89,7 @@ export async function CreateUserDto(
     throw new BadRequest('닉네임은 2자 이상 32자 이하로 입력해 주세요.');
   }
 
-  if (!gender.trim().includes(Gender.MALE || Gender.FEMALE)) {
+  if (![Gender.MALE, Gender.FEMALE].includes(gender as Gender)) {
     throw new BadRequest('성별은 남자, 여자를 입력해 주세요.');
   }
 
@@ -100,8 +115,9 @@ export async function CreateUserDto(
     name: name.trim(),
     nickname: nickname.trim(),
     image: image ? image.trim() : null,
-    gender: gender ?? Gender.MALE,
+    gender: gender || null,
     birthDay: birthDay ? new Date(birthDay) : null,
     phoneNumber: phoneNumber ? phoneNumber.trim() : null,
+    isPublic: isPublic ?? State.TRUE,
   };
 }

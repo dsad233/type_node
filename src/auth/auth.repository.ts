@@ -60,6 +60,7 @@ export class AuthRepository {
         gender: dto.gender,
         birthDay: dto.birthDay ?? null,
         phoneNumber: dto.phoneNumber ?? null,
+        isPublic: dto.isPublic,
         roles: {
           create: {},
         },

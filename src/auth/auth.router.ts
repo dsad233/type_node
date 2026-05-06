@@ -27,7 +27,7 @@ router.post('/signin', AsyncWrapper(authController.signIn));
 // 로그아웃
 router.post('/signout', AuthMiddleware, AsyncWrapper(authController.signOut));
 // 토큰 재발급
-router.post('/reissue', AuthMiddleware, AsyncWrapper(authController.reisSue));
+router.post('/reissue', AuthMiddleware, AsyncWrapper(authController.reissue));
 // 패스워드 변경
 router.patch(
   '/update/password',
