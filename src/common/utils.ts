@@ -35,16 +35,7 @@ export const regEx = {
     /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/,
 };
 
-// Type
-// export type ReqUser = {
-//   id: string;
-//   email: string;
-//   loginId: string;
-//   name: string;
-//   nickname: string;
-//   image: string | null;
-//   gender: Gender | null;
-//   birthDay: Date | null;
-//   phoneNumber: string | null;
-//   isPublic: State;
-// };
+// 랜덤 상수 함수
+export function randomConst() {
+  return Math.floor(Math.random() * 9999) + 1111;
+}

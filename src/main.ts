@@ -8,6 +8,7 @@ import { HttpError } from 'http-errors';
 import { prisma } from './common/configs/prisma-client';
 import { redisCondition } from './redis/redis.config';
 import cookieParser from 'cookie-parser';
+import Cors from './common/middlewares/core';
 
 const app: Express = express();
 const port: number = 3000;
@@ -15,6 +16,7 @@ const port: number = 3000;
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+app.use(Cors());
 
 // Redis 상태 체크
 redisCondition();

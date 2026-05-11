@@ -25,6 +25,7 @@ model User {
   birthDay DateTime? @db.Date @map("birth_day")
   phoneNumber String? @unique @db.VarChar(15) @map("phone_number")
   isPublic State @default(TRUE) @map("is_public")
+  verify State @default(FALSE)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

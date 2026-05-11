@@ -44,7 +44,15 @@ export const JWT_GUEST_ACCESS_TTL = Number(process.env.JWT_GUEST_ACCESS_TTL);
 /**
  * Redis
  */
-export const REDIS_HOST = process.env.REDIS_HOST || 'localhost';
+export const REDIS_HOST = String(process.env.REDIS_HOST) || 'localhost';
 export const REDIS_PORT = Number(process.env.REDIS_PORT) || 6379;
-export const REDIS_PASS = process.env.REDIS_PASS || '';
+export const REDIS_PASS = String(process.env.REDIS_PASS) || '';
 export const REDIS_DB = Number(process.env.REDIS_DB) || 0;
+
+/**
+ * NodeMailer
+ */
+export const MAIL_USER = String(process.env.MAIL_USER);
+export const MAIL_PASS = String(process.env.MAIL_PASS);
+export const MAILER_HOST = String(process.env.MAILER_HOST);
+export const MAILER_PORT = Number(process.env.MAILER_PORT);
