@@ -1,8 +1,8 @@
-import { BadRequest, NotFound, Unauthorized } from 'http-errors';
+import { BadRequest, NotFound, Unauthorized, Conflict } from 'http-errors';
 import { AuthRepository } from './auth.repository';
 import { RedisService } from '../redis/redis.service';
-import { comparePassword, regEx } from '../common/utils';
-import { ICreateUserDto, ISignInDto } from './dto';
+import { comparePassword, randomConst, regEx } from '../common/utils';
+import { ICreateUserDto, ISignInDto, IUpdatePassowrdDto } from './dto';
 import { JwtService } from '../jwt/jwt.service';
 import {
   JWT_ACCESS_SECRET_KEY,
@@ -11,39 +11,43 @@ import {
   JWT_REFRESH_TTL,
 } from '../common/configs/keys';
 import { TYPE } from '../common/libs';
-import { IUpdatePassowrdDto } from './dto/updatePasswordDto';
+import { MailerService } from '../mailer/mailer.service';
+import { State } from '../../generated/prisma/enums';
 
 export class AuthService {
   private readonly authRepository: AuthRepository;
   private readonly redisService: RedisService;
   private readonly jwtService: JwtService;
+  private readonly mailerService: MailerService;
   constructor(
     authRepository: AuthRepository,
     redisService: RedisService,
     jwtService: JwtService,
+    mailerService: MailerService,
   ) {
     this.authRepository = authRepository;
     this.redisService = redisService;
     this.jwtService = jwtService;
+    this.mailerService = mailerService;
   }
 
   // 유저 생성
   signUp = async (dto: ICreateUserDto): Promise<void> => {
     const alreadyEmail = await this.authRepository.existEmail(dto.email);
     if (alreadyEmail) {
-      throw new BadRequest('이미 존재하는 이메일 입니다.');
+      throw new Conflict('이미 존재하는 이메일 입니다.');
     }
 
     const alreadyUserId = await this.authRepository.existLoginId(dto.loginId);
     if (alreadyUserId) {
-      throw new BadRequest('이미 존재하는 사용자 ID 입니다.');
+      throw new Conflict('이미 존재하는 사용자 ID 입니다.');
     }
 
     const alreadyNickname = await this.authRepository.existNickname(
       dto.nickname,
     );
     if (alreadyNickname) {
-      throw new BadRequest('이미 존재하는 닉네임 입니다.');
+      throw new Conflict('이미 존재하는 닉네임 입니다.');
     }
 
     // 전화번호 입력 값이 존재할 경우, 중복 체크
@@ -52,11 +56,29 @@ export class AuthService {
         dto.phoneNumber,
       );
       if (alreadyPhoneNumber) {
-        throw new BadRequest('이미 존재하는 전화번호 입니다.');
+        throw new Conflict('이미 존재하는 전화번호 입니다.');
       }
     }
 
     await this.authRepository.create(dto);
+
+    // 인증 이메일 전송
+    await this.mailerService.send(dto.email, null);
+  };
+
+  // 유저 이메일 인증 여부 업데이트
+  verifyEmail = async (email: string) => {
+    const user = await this.authRepository.verifyEmail(email);
+
+    if (!user) {
+      throw new NotFound('존재하지 않는 유저 입니다.');
+    }
+
+    if (user.verify === State.TRUE) {
+      throw new BadRequest('이미 이메일 인증이 완료된 유저 입니다.');
+    }
+
+    await this.authRepository.updateVerify(email);
   };
 
   // 로그인
@@ -74,6 +96,12 @@ export class AuthService {
       if (!(await comparePassword(dto.password, user.password))) {
         throw new BadRequest(
           '패스워드가 일치하지 않습니다. 다시 시도해 주세요.',
+        );
+      }
+
+      if (user.verify === State.FALSE) {
+        throw new BadRequest(
+          '이메일 인증이 완료되지 않은 유저입니다. 이메일 인증을 완료 해주세요.',
         );
       }
 
@@ -118,6 +146,12 @@ export class AuthService {
 
     if (!(await comparePassword(dto.password, user.password))) {
       throw new BadRequest('패스워드가 일치하지 않습니다. 다시 시도해 주세요.');
+    }
+
+    if (user.verify === State.FALSE) {
+      throw new BadRequest(
+        '이메일 인증이 완료되지 않은 유저입니다. 이메일 인증을 완료 해주세요.',
+      );
     }
 
     const accessToken = await this.jwtService.sign(
@@ -257,7 +291,7 @@ export class AuthService {
     }
   };
 
-  // // 패스워드 변경
+  // 패스워드 변경
   updatePassword = async (
     userEmail: string,
     dto: IUpdatePassowrdDto,
@@ -273,5 +307,37 @@ export class AuthService {
     }
 
     await this.authRepository.updatePassword(user.id, dto.newPassowrd);
+  };
+
+  // 패스워드 변경 이메일 인증
+  certifiEmail = async (email: string): Promise<void> => {
+    // 랜덤 상수
+    const random = randomConst();
+
+    await this.redisService.setex(
+      `${TYPE.PrefixType.USERS}:CERTIFI:email=${email}`,
+      60,
+      String(random),
+    );
+
+    // 이메일 전송
+    await this.mailerService.send(email, random);
+  };
+
+  // 패스워드 변경 이메일 인증 완료
+  authenticationEmail = async (email: string, code: string): Promise<void> => {
+    const authCode = await this.redisService.get(
+      `${TYPE.PrefixType.USERS}:CERTIFI:email=${email}`,
+    );
+
+    if (!authCode) {
+      throw new NotFound('인증 코드가 만료되었습니다. 다시 요청해 주세요.');
+    }
+
+    if (authCode !== code) {
+      throw new Unauthorized(
+        '인증 번호가 일치하지 않습니다. 다시 시도해주세요.',
+      );
+    }
   };
 }

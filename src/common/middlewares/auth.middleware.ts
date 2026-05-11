@@ -131,6 +131,7 @@ async function getUser(payload: JwtPayload): Promise<{
   birthDay: Date | null;
   phoneNumber: string | null;
   isPublic: State;
+  verify: State;
 } | null> {
   const prop = payload.email ? payload.email : payload.loginId;
 
@@ -156,6 +157,7 @@ async function getUser(payload: JwtPayload): Promise<{
       birthDay: true,
       phoneNumber: true,
       isPublic: true,
+      verify: true,
     },
   });
 

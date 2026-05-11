@@ -1,9 +1,13 @@
 import { AuthService } from './auth.service';
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { CreateUserDto, ICreateUserDto } from './dto/createUserDto';
-import { SignInDto } from './dto/signInDto';
-import { UpdatePassowrdDto } from './dto/updatePasswordDto';
+import {
+  CertifiEmailDto,
+  CreateUserDto,
+  ICreateUserDto,
+  SignInDto,
+  UpdatePassowrdDto,
+} from './dto';
 
 export class AuthController {
   private readonly authService: AuthService;
@@ -23,6 +27,19 @@ export class AuthController {
     await this.authService.signUp(dto);
 
     return res.status(StatusCodes.CREATED).json({ message: '회원 가입 완료.' });
+  };
+
+  // 유저 이메일 인증 여부 업데이트
+  verifyEmail = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response<{ message: string }>> => {
+    await this.authService.verifyEmail(
+      (await CertifiEmailDto(req.query.email as string)).email,
+    );
+
+    return res.status(StatusCodes.OK).json({ message: '이메일 인증 완료.' });
   };
 
   // 로그인
@@ -82,5 +99,29 @@ export class AuthController {
     await this.authService.updatePassword(req.user.email, dto);
 
     return res.status(StatusCodes.OK).json({ message: '비밀번호 변경 완료.' });
+  };
+
+  // 패스워드 변경 이메일 인증
+  certifiEmail = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response<{ message: string }>> => {
+    await this.authService.certifiEmail(
+      (await CertifiEmailDto(req.body.email)).email,
+    );
+
+    return res.status(StatusCodes.OK).json({ message: '이메일 전송 완료.' });
+  };
+
+  // 패스워드 변경 이메일 인증 완료
+  authenticationEmail = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response<{ message: string }>> => {
+    await this.authService.authenticationEmail(req.user.email, req.body.code);
+
+    return res.status(StatusCodes.OK).json({ message: '이메일 인증 완료.' });
   };
 }

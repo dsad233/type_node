@@ -1,4 +1,4 @@
-import { PrismaClient } from '../../generated/prisma/client';
+import { PrismaClient, State } from '../../generated/prisma/client';
 import { hashPassword } from '../common/utils';
 import { ICreateUserDto } from './dto/createUserDto';
 
@@ -68,6 +68,18 @@ export class AuthRepository {
     });
   };
 
+  // 유저 이메일 인증 유무 조회
+  verifyEmail = async (email: string): Promise<{ verify: State } | null> => {
+    return await this.prisma.user.findFirst({
+      where: {
+        email: email,
+      },
+      select: {
+        verify: true,
+      },
+    });
+  };
+
   // 이메일 로그인
   emailSigIn = async (
     email: string,
@@ -75,6 +87,7 @@ export class AuthRepository {
     id: string;
     email: string;
     password: string;
+    verify: State;
   } | null> => {
     return await this.prisma.user.findFirst({
       where: { email: email },
@@ -82,6 +95,7 @@ export class AuthRepository {
         id: true,
         email: true,
         password: true,
+        verify: true,
       },
     });
   };
@@ -93,6 +107,7 @@ export class AuthRepository {
     id: string;
     loginId: string;
     password: string;
+    verify: State;
   } | null> => {
     return await this.prisma.user.findFirst({
       where: {
@@ -102,6 +117,7 @@ export class AuthRepository {
         id: true,
         loginId: true,
         password: true,
+        verify: true,
       },
     });
   };
@@ -136,6 +152,18 @@ export class AuthRepository {
       select: {
         id: true,
         loginId: true,
+      },
+    });
+  };
+
+  // 이메일 인증 완료 여부 업데이트
+  updateVerify = async (email: string): Promise<void> => {
+    await this.prisma.user.update({
+      where: {
+        email: email,
+      },
+      data: {
+        verify: State.TRUE,
       },
     });
   };
