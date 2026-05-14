@@ -1,4 +1,4 @@
-import { PrismaClient } from "../../generated/prisma/client";
+import { PrismaClient } from '../../generated/prisma/client';
 
 export class UsersRepository {
   private prisma: PrismaClient;
@@ -12,7 +12,9 @@ export class UsersRepository {
   };
 
   // 유저 상세 조회
-  findOne = async (id: string): Promise<Object | null> => {
+  findOne = async (
+    id: string,
+  ): Promise<{ id: string; email: string; name: string } | null> => {
     return await this.prisma.user.findFirst({
       where: { id: id },
       select: {
