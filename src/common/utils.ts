@@ -1,5 +1,6 @@
-import bcrypt from "bcrypt";
-import { BCYPT_PASSWORD_SALT } from "./configs/keys";
+import bcrypt from 'bcrypt';
+import { BCYPT_PASSWORD_SALT } from './configs/keys';
+import { Gender, State } from '../../generated/prisma/enums';
 
 /**
  * 패스워드 관련
@@ -33,3 +34,8 @@ export const regEx = {
   phoneNumber:
     /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/,
 };
+
+// 랜덤 상수 함수
+export function randomConst() {
+  return Math.floor(1000 + Math.random() * 9000);
+}

@@ -1,6 +1,6 @@
-import { Gender, PrismaClient } from "../../generated/prisma/client";
-import { hashPassword } from "../common/utils";
-import { ICreateUserDto } from "./dto/createUserDto";
+import { PrismaClient, State } from '../../generated/prisma/client';
+import { hashPassword } from '../common/utils';
+import { ICreateUserDto } from './dto/createUserDto';
 
 export class AuthRepository {
   private prisma: PrismaClient;
@@ -18,7 +18,7 @@ export class AuthRepository {
   };
 
   // 중복 아이디 유무 체크
-  existUserId = async (
+  existLoginId = async (
     loginId: string,
   ): Promise<{ loginId: string } | null> => {
     return await this.prisma.user.findUnique({
@@ -60,6 +60,22 @@ export class AuthRepository {
         gender: dto.gender,
         birthDay: dto.birthDay ?? null,
         phoneNumber: dto.phoneNumber ?? null,
+        isPublic: dto.isPublic,
+        roles: {
+          create: {},
+        },
+      },
+    });
+  };
+
+  // 유저 이메일 인증 유무 조회
+  verifyEmail = async (email: string): Promise<{ verify: State } | null> => {
+    return await this.prisma.user.findFirst({
+      where: {
+        email: email,
+      },
+      select: {
+        verify: true,
       },
     });
   };
@@ -71,9 +87,7 @@ export class AuthRepository {
     id: string;
     email: string;
     password: string;
-    name: string;
-    nickname: string;
-    gender: Gender | null;
+    verify: State;
   } | null> => {
     return await this.prisma.user.findFirst({
       where: { email: email },
@@ -81,9 +95,7 @@ export class AuthRepository {
         id: true,
         email: true,
         password: true,
-        name: true,
-        nickname: true,
-        gender: true,
+        verify: true,
       },
     });
   };
@@ -95,9 +107,7 @@ export class AuthRepository {
     id: string;
     loginId: string;
     password: string;
-    name: string;
-    nickname: string;
-    gender: Gender | null;
+    verify: State;
   } | null> => {
     return await this.prisma.user.findFirst({
       where: {
@@ -107,9 +117,65 @@ export class AuthRepository {
         id: true,
         loginId: true,
         password: true,
-        name: true,
-        nickname: true,
-        gender: true,
+        verify: true,
+      },
+    });
+  };
+
+  // 이메일 유저 페이로드 검증
+  verifyEmailPayload = async (
+    id: string,
+    email: string,
+  ): Promise<{ id: string; email: string } | null> => {
+    return await this.prisma.user.findFirst({
+      where: {
+        id: id,
+        email: email,
+      },
+      select: {
+        id: true,
+        email: true,
+      },
+    });
+  };
+
+  // loginId 유저 페이로드 검증
+  verifyLoginIdPayload = async (
+    id: string,
+    loginId: string,
+  ): Promise<{ id: string; loginId: string } | null> => {
+    return await this.prisma.user.findFirst({
+      where: {
+        id: id,
+        email: loginId,
+      },
+      select: {
+        id: true,
+        loginId: true,
+      },
+    });
+  };
+
+  // 이메일 인증 완료 여부 업데이트
+  updateVerify = async (email: string): Promise<void> => {
+    await this.prisma.user.update({
+      where: {
+        email: email,
+      },
+      data: {
+        verify: State.TRUE,
+      },
+    });
+  };
+
+  // 패스워드 변경
+  updatePassword = async (id: string, newPassword: string): Promise<void> => {
+    await this.prisma.user.update({
+      where: {
+        id: id,
+      },
+      data: {
+        password: await hashPassword(newPassword),
       },
     });
   };

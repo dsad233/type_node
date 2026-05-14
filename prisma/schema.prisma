@@ -1,11 +1,16 @@
+datasource db {
+  provider = "mysql"
+}
+
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
-  engineType             = "client"
-}
 
-datasource db {
-  provider = "mysql"
+  engineType = "client"
+  runtime = "nodejs"
+  moduleFormat           = "esm"
+  generatedFileExtension = "ts"
+  importFileExtension    = "ts"
 }
 
 model User {
@@ -20,12 +25,14 @@ model User {
   birthDay DateTime? @db.Date @map("birth_day")
   phoneNumber String? @unique @db.VarChar(15) @map("phone_number")
   isPublic State @default(TRUE) @map("is_public")
+  verify State @default(FALSE)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   deletedAt State @default(FALSE) @map("deleted_at")
 
   // one to many
+  roles Role[]
   posts Post[]
   comments Comment[]
   // Likes one to many
@@ -38,9 +45,29 @@ enum Gender {
   FEMALE 
 } 
 
+model Role {
+  id    String  @id @default(uuid())
+  authority Authority @default(USER)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  deletedAt State @default(FALSE) @map("deleted_at")
+
+  // many to one
+  userId String @map("user_id")
+  users  User   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map(name: "roles")
+}
+
+enum Authority {
+  USER
+  ADMIN
+  GUEST
+}
+
 model Post {
   id String  @id @default(uuid())
-  title String 
+  title String @db.VarChar(300)
   context String? @db.Text
   image String?
   isPublic State @default(TRUE) @map("is_public")
