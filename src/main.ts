@@ -21,7 +21,8 @@ app.use(Cors());
 // Redis 상태 체크
 redisCondition();
 
-app.use("/auth", AuthRouter);
+app.use('/auth', AuthRouter);
+app.use('/users', UsersRouter);
 
 app.use((error: HttpError, req: Request, res: Response, next: NextFunction) =>
   ErrorMiddleware(error, req, res, next),
