@@ -316,7 +316,8 @@ export class AuthService {
 
     await this.redisService.setex(
       `${TYPE.PrefixType.USERS}:CERTIFI:email=${email}`,
-      60,
+      // 3분
+      300,
       String(random),
     );
 

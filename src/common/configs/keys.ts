@@ -5,8 +5,9 @@ export const DB_USER = String(process.env.DB_USER);
 export const DB_PASS = String(process.env.DB_PASS);
 export const DB_PORT = Number(process.env.DB_PORT) || 3306;
 export const DB_NAME = String(process.env.DB_NAME);
-export const DB_POOL_SIZE = Number(process.env.DB_POOL_SIZE);
+export const DB_CONNECTON_LIMIT = Number(process.env.DB_CONNECTON_LIMIT);
 export const DB_POOL_TIMEOUT = Number(process.env.DB_POOL_TIMEOUT);
+export const DB_CONNECT_TIMEOUT = Number(process.env.DB_CONNECT_TIMEOUT);
 export const DB_TIME_ZONE = String(process.env.DB_TIME_ZONE) || 'Asia/Seoul';
 
 /**

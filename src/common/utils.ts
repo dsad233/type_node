@@ -37,5 +37,5 @@ export const regEx = {
 
 // 랜덤 상수 함수
 export function randomConst() {
-  return Math.floor(Math.random() * 9999) + 1111;
+  return Math.floor(1000 + Math.random() * 9000);
 }
