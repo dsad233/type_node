@@ -9,6 +9,7 @@ import { prisma } from './common/configs/prisma-client';
 import { redisCondition } from './redis/redis.config';
 import cookieParser from 'cookie-parser';
 import Cors from './common/middlewares/core';
+import { MorganMiddleware } from './common/middlewares/morgan.middlewares';
 
 const app: Express = express();
 const port: number = 3000;
@@ -20,6 +21,8 @@ app.use(Cors());
 
 // Redis 상태 체크
 redisCondition();
+
+app.use(MorganMiddleware());
 
 app.use('/auth', AuthRouter);
 app.use('/users', UsersRouter);
