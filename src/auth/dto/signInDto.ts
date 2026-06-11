@@ -1,12 +1,12 @@
 import { BadRequest } from 'http-errors';
 import { regEx } from '../../common/utils';
 
-export type ISignInDto = {
+export type TSignInDto = {
   loginId: string;
   password: string;
 };
 
-export async function SignInDto(body: ISignInDto): Promise<ISignInDto> {
+export async function SignInDto(body: TSignInDto): Promise<TSignInDto> {
   const { loginId, password } = body;
   // 입력 유무 검증
   if (!loginId) {
@@ -26,6 +26,6 @@ export async function SignInDto(body: ISignInDto): Promise<ISignInDto> {
 
   return {
     loginId: loginId.trim(),
-    password: password,
+    password: password.trim(),
   };
 }

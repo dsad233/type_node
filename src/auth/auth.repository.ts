@@ -1,6 +1,6 @@
 import { PrismaClient, State } from '../../generated/prisma/client';
 import { hashPassword } from '../common/utils';
-import { ICreateUserDto } from './dto/createUserDto';
+import { OmitTCreateUserDto } from './dto/createUserDto';
 
 export class AuthRepository {
   private prisma: PrismaClient;
@@ -48,7 +48,7 @@ export class AuthRepository {
   };
 
   // 유저 생성
-  create = async (dto: ICreateUserDto): Promise<void> => {
+  create = async (dto: OmitTCreateUserDto): Promise<void> => {
     await this.prisma.user.create({
       data: {
         email: dto.email,
@@ -56,8 +56,8 @@ export class AuthRepository {
         password: await hashPassword(dto.password),
         name: dto.name,
         nickname: dto.nickname,
-        image: dto.image,
-        gender: dto.gender,
+        image: dto.image ?? null,
+        gender: dto.gender ?? null,
         birthDay: dto.birthDay ?? null,
         phoneNumber: dto.phoneNumber ?? null,
         isPublic: dto.isPublic,
@@ -169,10 +169,13 @@ export class AuthRepository {
   };
 
   // 패스워드 변경
-  updatePassword = async (id: string, newPassword: string): Promise<void> => {
+  updatePassword = async (
+    email: string,
+    newPassword: string,
+  ): Promise<void> => {
     await this.prisma.user.update({
       where: {
-        id: id,
+        email: email,
       },
       data: {
         password: await hashPassword(newPassword),

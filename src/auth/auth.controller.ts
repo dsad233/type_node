@@ -4,9 +4,10 @@ import { StatusCodes } from 'http-status-codes';
 import {
   CertifiEmailDto,
   CreateUserDto,
-  ICreateUserDto,
+  TUpdatePasswordRequestDto,
   SignInDto,
   UpdatePassowrdDto,
+  UpdatePasswordRequestDto,
 } from './dto';
 
 export class AuthController {
@@ -22,9 +23,7 @@ export class AuthController {
     res: Response,
     next: NextFunction,
   ): Promise<Response<{ message: string }>> => {
-    const dto = await CreateUserDto(req.body);
-
-    await this.authService.signUp(dto);
+    await this.authService.signUp(await CreateUserDto(req.body));
 
     return res.status(StatusCodes.CREATED).json({ message: '회원 가입 완료.' });
   };
@@ -53,9 +52,7 @@ export class AuthController {
       data: { access_token: string; refresh_token: string };
     }>
   > => {
-    const dto = await SignInDto(req.body);
-
-    const tokens = await this.authService.signIn(dto);
+    const tokens = await this.authService.signIn(await SignInDto(req.body));
 
     return res.status(StatusCodes.OK).json({
       message: '로그인 완료.',
@@ -94,9 +91,10 @@ export class AuthController {
     res: Response,
     next: NextFunction,
   ): Promise<Response<{ message: string }>> => {
-    const dto = await UpdatePassowrdDto(req.body);
-
-    await this.authService.updatePassword(req.user.email, dto);
+    await this.authService.updatePassword(
+      await UpdatePasswordRequestDto(req.query as TUpdatePasswordRequestDto),
+      (await UpdatePassowrdDto(req.body)).newPassowrd,
+    );
 
     return res.status(StatusCodes.OK).json({ message: '비밀번호 변경 완료.' });
   };
@@ -120,8 +118,13 @@ export class AuthController {
     res: Response,
     next: NextFunction,
   ): Promise<Response<{ message: string }>> => {
-    await this.authService.authenticationEmail(req.user.email, req.body.code);
+    const token = await this.authService.authenticationEmail(
+      (await CertifiEmailDto(req.body.email)).email,
+      req.body.code,
+    );
 
-    return res.status(StatusCodes.OK).json({ message: '이메일 인증 완료.' });
+    return res
+      .status(StatusCodes.OK)
+      .json({ message: '이메일 인증 완료.', token: token });
   };
 }

@@ -1,9 +1,13 @@
 import { BadRequest } from 'http-errors';
 import { regEx } from '../../common/utils';
 
+type TCertifiEmailDto = {
+  email: string;
+};
+
 export async function CertifiEmailDto(
   email: string,
-): Promise<{ email: string }> {
+): Promise<TCertifiEmailDto> {
   // 입력 유무 검증
   if (!email) {
     throw new BadRequest('이메일을 입력해 주세요.');

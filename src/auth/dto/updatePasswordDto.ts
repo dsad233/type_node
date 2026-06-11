@@ -1,20 +1,15 @@
 import { BadRequest } from 'http-errors';
 import { regEx } from '../../common/utils';
 
-export type IUpdatePassowrdDto = {
-  oldPassword: string;
+export type TUpdatePassowrdDto = {
   newPassowrd: string;
   newConfirmPassword: string;
 };
 
 export async function UpdatePassowrdDto(
-  body: IUpdatePassowrdDto,
-): Promise<IUpdatePassowrdDto> {
-  const { oldPassword, newPassowrd, newConfirmPassword } = body;
-
-  if (!oldPassword) {
-    throw new BadRequest('이전 패스워드를 입력해 주세요.');
-  }
+  body: TUpdatePassowrdDto,
+): Promise<TUpdatePassowrdDto> {
+  const { newPassowrd, newConfirmPassword } = body;
 
   if (!newPassowrd) {
     throw new BadRequest('변경 예정인 패스워드를 입력해 주세요.');
@@ -25,7 +20,6 @@ export async function UpdatePassowrdDto(
   }
 
   if (
-    !oldPassword.trim().match(regEx.password) ||
     !newPassowrd.trim().match(regEx.password) ||
     !newConfirmPassword.trim().match(regEx.password)
   ) {
@@ -41,7 +35,6 @@ export async function UpdatePassowrdDto(
   }
 
   return {
-    oldPassword: oldPassword.trim(),
     newPassowrd: newPassowrd.trim(),
     newConfirmPassword: newConfirmPassword.trim(),
   };

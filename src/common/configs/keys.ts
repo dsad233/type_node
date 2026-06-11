@@ -1,5 +1,7 @@
 import 'dotenv/config';
 
+export const NODE_ENV = String(process.env.NODE_ENV) || 'local';
+export const TIMEZONE = String(process.env.TIMEZONE) || 'Asia/Seoul';
 export const DB_HOST = String(process.env.DB_HOST) || 'localhost';
 export const DB_USER = String(process.env.DB_USER);
 export const DB_PASS = String(process.env.DB_PASS);
@@ -8,7 +10,6 @@ export const DB_NAME = String(process.env.DB_NAME);
 export const DB_CONNECTON_LIMIT = Number(process.env.DB_CONNECTON_LIMIT);
 export const DB_POOL_TIMEOUT = Number(process.env.DB_POOL_TIMEOUT);
 export const DB_CONNECT_TIMEOUT = Number(process.env.DB_CONNECT_TIMEOUT);
-export const DB_TIME_ZONE = String(process.env.DB_TIME_ZONE) || 'Asia/Seoul';
 
 /**
  * Bcrypt
