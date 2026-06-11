@@ -8,7 +8,7 @@ export async function PaginationDto(
 ): Promise<TPaginationDto> {
   const { page, pages } = query;
   return {
-    page: page ?? 1,
-    pages: pages ?? 10,
+    page: page ?? '1',
+    pages: pages ?? '10',
   };
 }

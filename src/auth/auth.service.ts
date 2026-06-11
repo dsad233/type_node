@@ -366,7 +366,7 @@ export class AuthService {
       `${TYPE.PrefixType.USERS}:CERTIFI:email=${email}`,
     );
 
-    const token = crypto.createHash('sha512').update(email).digest('hex');
+    const token = crypto.randomBytes(32).toString('hex');
 
     // 인증 성공 시, 패스워드 변경 요청 가능하도록 Redis에 인증 완료 정보 저장 (3분)
     await this.redisService.setex(

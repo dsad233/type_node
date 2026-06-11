@@ -114,14 +114,15 @@ export async function CreateUserDto(
     );
   }
 
-  if (
-    !phoneNumber?.trim().match(regEx.phoneNumber) &&
-    phoneNumber?.length &&
-    phoneNumber.trim().length > 15
-  ) {
-    throw new BadRequest(
-      '전화번호 형식이 올바르지 않습니다. 15자 이하로 입력해 주세요.',
-    );
+  if (phoneNumber) {
+    if (
+      !phoneNumber.trim().match(regEx.phoneNumber) ||
+      phoneNumber.trim().length > 15
+    ) {
+      throw new BadRequest(
+        '전화번호 형식이 올바르지 않습니다. 15자 이하로 입력해 주세요.',
+      );
+    }
   }
 
   return {

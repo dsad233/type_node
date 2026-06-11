@@ -44,7 +44,7 @@ export function randomConst(): number {
 // 날짜 포맷팅 함수
 export function dateFormat(year: number, month: number, day: number): string {
   const formatterMonth = month + 1 < 10 ? '0' + (month + 1) : month + 1;
-  const formatterDay = day + 1 < 10 ? '0' + (day + 1) : day + 1;
+  const formatterDay = day < 10 ? '0' + (day + 1) : day + 1;
 
   return year + '-' + formatterMonth + '-' + formatterDay;
 }
