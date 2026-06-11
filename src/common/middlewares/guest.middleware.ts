@@ -15,16 +15,9 @@ export default async function GuestMiddleware(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
+  // 로그인 세션이 존재할 때, 통과 처리
   if (req.headers.authorization || req.user) {
-    await redis.del(`${Authority.GUEST}:guestId=${req.cookies.guestId}`);
-
-    // 기존 유저 세션 데이터가 존재할 시 GuestId 제거
-    res.clearCookie('guestId', {
-      maxAge: 3600000,
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
-    });
+    return next();
   }
 
   // 기존 guest 세션 조회

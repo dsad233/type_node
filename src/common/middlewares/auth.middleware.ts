@@ -9,7 +9,7 @@ import { prisma } from '../configs/prisma-client';
 import { redis } from '../../redis/redis.config';
 import { JWT_ACCESS_SECRET_KEY } from '../configs/keys';
 import { StatusCodes } from 'http-status-codes';
-import { Gender, State } from '../../../generated/prisma/enums';
+import { Authority, Gender, State } from '../../../generated/prisma/enums';
 import { TYPE } from '../libs';
 import { JwtPayload } from '../../jwt/jwt.service';
 
@@ -21,6 +21,19 @@ export default async function AuthMiddleware(
   if (!req.headers.authorization) {
     return res.status(StatusCodes.UNAUTHORIZED).json({
       message: '사용자 정보가 존재하지 않습니다.',
+    });
+  }
+
+  // Guest 세션이 존재할 때 기존 Guest 세션 삭제 처리
+  if (req.cookies?.guestId) {
+    await redis.del(`${Authority.GUEST}:guestId=${req.cookies.guestId}`);
+
+    // 기존 유저 세션 데이터가 존재할 시 GuestId 제거
+    res.clearCookie('guestId', {
+      maxAge: 3600000,
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
     });
   }
 
