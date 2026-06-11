@@ -1,0 +1,32 @@
+import { NotFound } from 'http-errors';
+
+export type TRequestPostDto = {
+  search?: string | null;
+  category?: string | null;
+  isPublic?: string | null;
+  orderby: string;
+};
+
+export async function RequestPostDto(
+  query: TRequestPostDto,
+): Promise<TRequestPostDto> {
+  const { search, category, isPublic, orderby } = query;
+  if (!isPublic) {
+    throw new NotFound(
+      'isPublic 파라미터 값이 존재하지 않습니다. 다시 요청해 주세요.',
+    );
+  }
+
+  if (!orderby) {
+    throw new NotFound(
+      'orderby 파라미터 값이 존재하지 않습니다. 다시 요청해 주세요.',
+    );
+  }
+
+  return {
+    search: search ? search.trim() : null,
+    category: category && category.trim() !== 'ALL' ? category : null,
+    isPublic: isPublic ? isPublic.trim() : null,
+    orderby: orderby.trim(),
+  };
+}
