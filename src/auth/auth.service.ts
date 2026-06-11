@@ -2,7 +2,11 @@ import { BadRequest, NotFound, Unauthorized, Conflict } from 'http-errors';
 import { AuthRepository } from './auth.repository';
 import { RedisService } from '../redis/redis.service';
 import { comparePassword, randomConst, regEx } from '../common/utils';
-import { ICreateUserDto, ISignInDto, IUpdatePassowrdDto } from './dto';
+import {
+  OmitTCreateUserDto,
+  TSignInDto,
+  TUpdatePasswordRequestDto,
+} from './dto';
 import { JwtService } from '../jwt/jwt.service';
 import {
   JWT_ACCESS_SECRET_KEY,
@@ -13,6 +17,7 @@ import {
 import { TYPE } from '../common/libs';
 import { MailerService } from '../mailer/mailer.service';
 import { State } from '../../generated/prisma/enums';
+import crypto from 'crypto';
 
 export class AuthService {
   private readonly authRepository: AuthRepository;
@@ -32,7 +37,7 @@ export class AuthService {
   }
 
   // 유저 생성
-  signUp = async (dto: ICreateUserDto): Promise<void> => {
+  signUp = async (dto: OmitTCreateUserDto): Promise<void> => {
     const alreadyEmail = await this.authRepository.existEmail(dto.email);
     if (alreadyEmail) {
       throw new Conflict('이미 존재하는 이메일 입니다.');
@@ -83,7 +88,7 @@ export class AuthService {
 
   // 로그인
   signIn = async (
-    dto: ISignInDto,
+    dto: TSignInDto,
   ): Promise<{ access_token: string; refresh_token: string }> => {
     // 입력 받은 값이 이메일 이라면,
     if (dto.loginId?.match(regEx.email)) {
@@ -293,20 +298,32 @@ export class AuthService {
 
   // 패스워드 변경
   updatePassword = async (
-    userEmail: string,
-    dto: IUpdatePassowrdDto,
+    query: TUpdatePasswordRequestDto,
+    updatePassword: string,
   ): Promise<void> => {
-    const user = await this.authRepository.emailSigIn(userEmail);
+    const user = await this.authRepository.emailSigIn(query.email);
 
     if (!user) {
       throw new NotFound('존재하지 않는 유저 입니다.');
     }
 
-    if (!(await comparePassword(dto.oldPassword, user.password))) {
-      throw new BadRequest('패스워드가 일치하지 않습니다. 다시 시도해 주세요.');
+    const token = await this.redisService.get(
+      `${TYPE.PrefixType.USERS}:PASSWORD:email=${query.email}`,
+    );
+
+    if (!token) {
+      throw new NotFound(
+        '인증 토큰이 만료되었습니다. 다시 이메일 인증을 진행해 주세요.',
+      );
     }
 
-    await this.authRepository.updatePassword(user.id, dto.newPassowrd);
+    if (token !== query.token) {
+      throw new BadRequest(
+        '인증 토큰이 일치하지 않습니다. 다시 이메일 인증을 진행해 주세요.',
+      );
+    }
+
+    await this.authRepository.updatePassword(query.email, updatePassword);
   };
 
   // 패스워드 변경 이메일 인증
@@ -326,7 +343,10 @@ export class AuthService {
   };
 
   // 패스워드 변경 이메일 인증 완료
-  authenticationEmail = async (email: string, code: string): Promise<void> => {
+  authenticationEmail = async (
+    email: string,
+    code: string,
+  ): Promise<string> => {
     const authCode = await this.redisService.get(
       `${TYPE.PrefixType.USERS}:CERTIFI:email=${email}`,
     );
@@ -340,5 +360,21 @@ export class AuthService {
         '인증 번호가 일치하지 않습니다. 다시 시도해주세요.',
       );
     }
+
+    // 인증 성공 시, 기존 인증 코드 삭제
+    await this.redisService.delete(
+      `${TYPE.PrefixType.USERS}:CERTIFI:email=${email}`,
+    );
+
+    const token = crypto.randomBytes(32).toString('hex');
+
+    // 인증 성공 시, 패스워드 변경 요청 가능하도록 Redis에 인증 완료 정보 저장 (3분)
+    await this.redisService.setex(
+      `${TYPE.PrefixType.USERS}:PASSWORD:email=${email}`,
+      300,
+      token,
+    );
+
+    return token;
   };
 }

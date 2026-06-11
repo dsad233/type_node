@@ -1,6 +1,7 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
 import AuthRouter from './auth/auth.router';
 import UsersRouter from './users/users.router';
+import PostsRouter from './posts/posts.router';
 
 import ErrorMiddleware from './common/middlewares/errorMiddleware';
 
@@ -9,6 +10,7 @@ import { prisma } from './common/configs/prisma-client';
 import { redisCondition } from './redis/redis.config';
 import cookieParser from 'cookie-parser';
 import Cors from './common/middlewares/core';
+import { MorganMiddleware } from './common/middlewares/morgan.middlewares';
 
 const app: Express = express();
 const port: number = 3000;
@@ -21,7 +23,11 @@ app.use(Cors());
 // Redis 상태 체크
 redisCondition();
 
-app.use("/auth", AuthRouter);
+app.use(MorganMiddleware());
+
+app.use('/auth', AuthRouter);
+app.use('/users', UsersRouter);
+app.use('/posts', PostsRouter);
 
 app.use((error: HttpError, req: Request, res: Response, next: NextFunction) =>
   ErrorMiddleware(error, req, res, next),

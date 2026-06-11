@@ -38,21 +38,12 @@ router.post('/signout', AuthMiddleware, AsyncWrapper(authController.signOut));
 // 토큰 재발급
 router.post('/reissue', AuthMiddleware, AsyncWrapper(authController.reissue));
 // 패스워드 변경
-router.patch(
-  '/update/password',
-  AuthMiddleware,
-  AsyncWrapper(authController.updatePassword),
-);
+router.patch('/update/password', AsyncWrapper(authController.updatePassword));
 // 이메일 인증
-router.post(
-  '/certification',
-  AuthMiddleware,
-  AsyncWrapper(authController.certifiEmail),
-);
+router.post('/certification', AsyncWrapper(authController.certifiEmail));
 // 이메일 인증 완료
 router.post(
   '/authentication',
-  AuthMiddleware,
   AsyncWrapper(authController.authenticationEmail),
 );
 
