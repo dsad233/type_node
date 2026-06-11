@@ -1,4 +1,4 @@
-import { BadRequest } from 'http-errors';
+import { NotFound } from 'http-errors';
 import { UsersRepository } from './users.repository';
 import { State } from '../../generated/prisma/enums';
 import { dateFormat } from '../common/utils';
@@ -38,7 +38,7 @@ export class UsersService {
     const user = await this.usersRepository.findOne(id);
 
     if (!user) {
-      throw new BadRequest('유저 항목이 존재하지 않습니다.');
+      throw new NotFound('유저 항목이 존재하지 않습니다.');
     }
 
     return {
