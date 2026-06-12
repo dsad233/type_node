@@ -37,7 +37,7 @@ export class PostsController {
     }>
   > => {
     return res.status(StatusCodes.OK).json({
-      message: '카테고리 조회 완료',
+      message: '카테고리 조회 완료.',
       data: await this.postsService.findCategory(),
     });
   };
@@ -48,8 +48,15 @@ export class PostsController {
     res: Response,
   ): Promise<Response<{ message: string; data: number }>> => {
     return res.status(StatusCodes.OK).json({
-      message: '게시글 수 조회 완료',
-      data: await this.postsService.countPosts(),
+      message: '게시글 수 조회 완료.',
+      count: await this.postsService.countPosts(),
+    });
+  };
+
+  countByCategoryPost = async (req: Request, res: Response) => {
+    return res.status(StatusCodes.OK).json({
+      message: '카테고리별 게시글 수 조회 완료.',
+      count: await this.postsService.countByCategoryPost(),
     });
   };
 
@@ -77,7 +84,7 @@ export class PostsController {
     }>
   > => {
     return res.status(StatusCodes.OK).json({
-      message: '게시물 조회 완료',
+      message: '게시물 조회 완료.',
       data: await this.postsService.find(
         await PaginationDto({
           page: req.query.page as string,
@@ -112,7 +119,7 @@ export class PostsController {
     }>
   > => {
     return res.status(StatusCodes.OK).json({
-      message: '게시글 상세 조회 완료',
+      message: '게시글 상세 조회 완료.',
       data: await this.postsService.findOne(req.params.id as string),
     });
   };

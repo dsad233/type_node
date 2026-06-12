@@ -26,6 +26,16 @@ export class PostsService {
     return await this.postsRepository.countPosts();
   };
 
+  // 카테고리별 게시글 수 조회
+  countByCategoryPost = async () => {
+    return (await this.postsRepository.countByCategoryPost()).map((prop) => {
+      return {
+        category: prop.category,
+        count: prop._count,
+      };
+    });
+  };
+
   // 게시글 전체 조회
   find = async (
     paginations: TPaginationDto,

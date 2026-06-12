@@ -39,6 +39,14 @@ export class PostsRepository {
     return await this.prisma.post.count();
   };
 
+  // 카테고리별 게시글 수 조회
+  countByCategoryPost = async () => {
+    return await this.prisma.post.groupBy({
+      by: ['category'],
+      _count: true,
+    });
+  };
+
   // 게시글 전체 조회
   find = async (
     paginations: TPaginationDto,
