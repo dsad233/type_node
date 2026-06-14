@@ -135,7 +135,7 @@ enum Category {
   // 자유
   FREE
   // 스포츠 
-  SPORT
+  SPORTS
   // 게임
   GAME
 }

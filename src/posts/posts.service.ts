@@ -26,6 +26,35 @@ export class PostsService {
     return await this.postsRepository.countPosts();
   };
 
+  // 카테고리별 게시글 수 조회
+  countByCategoryPost = async () => {
+    const categoryMap: Record<string, string> = {
+      FREE: '자유',
+      SPORTS: '스포츠',
+      GAME: '게임',
+    };
+
+    const result = [];
+
+    const counts = await this.postsRepository.countByCategoryPost();
+
+    if (counts.length) {
+      for (let i = 0; i < counts.length; i++) {
+        for (let [key, value] of Object.entries(categoryMap)) {
+          if (counts[i]?.category === key) {
+            result.push({
+              key: key,
+              name: value,
+              count: counts[i]?._count,
+            });
+          }
+        }
+      }
+    }
+
+    return result;
+  };
+
   // 게시글 전체 조회
   find = async (
     paginations: TPaginationDto,

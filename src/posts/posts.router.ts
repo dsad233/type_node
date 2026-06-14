@@ -20,6 +20,11 @@ router.post('', AuthMiddleware, AsyncWrapper(postsController.create));
 router.get('/categories', AsyncWrapper(postsController.findCategory));
 // 게시글 수 조회
 router.get('/count', AsyncWrapper(postsController.countPosts));
+// 카테고리별 게시글 수 조회
+router.get(
+  '/count/category',
+  AsyncWrapper(postsController.countByCategoryPost),
+);
 // 게시글 목록 조회
 router.get(
   '',
