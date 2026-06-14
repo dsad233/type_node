@@ -10,6 +10,7 @@ export const DB_NAME = String(process.env.DB_NAME);
 export const DB_CONNECTON_LIMIT = Number(process.env.DB_CONNECTON_LIMIT);
 export const DB_POOL_TIMEOUT = Number(process.env.DB_POOL_TIMEOUT);
 export const DB_CONNECT_TIMEOUT = Number(process.env.DB_CONNECT_TIMEOUT);
+export const DB_IDLE_TIMEOUT = Number(process.env.DB_IDLE_TIMEOUT);
 
 /**
  * Bcrypt
