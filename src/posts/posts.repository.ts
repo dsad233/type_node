@@ -43,7 +43,9 @@ export class PostsRepository {
   countByCategoryPost = async () => {
     return await this.prisma.post.groupBy({
       by: ['category'],
-      _count: true,
+      _count: {
+        _all: true,
+      },
     });
   };
 
