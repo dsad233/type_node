@@ -53,10 +53,11 @@ export class PostsController {
     });
   };
 
+  // 카테고리별 게시글 수 조회
   countByCategoryPost = async (req: Request, res: Response) => {
     return res.status(StatusCodes.OK).json({
       message: '카테고리별 게시글 수 조회 완료.',
-      count: await this.postsService.countByCategoryPost(),
+      data: await this.postsService.countByCategoryPost(),
     });
   };
 
