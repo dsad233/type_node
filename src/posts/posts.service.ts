@@ -45,7 +45,7 @@ export class PostsService {
             result.push({
               key: key,
               name: value,
-              count: counts[i]?._count._all,
+              count: counts[i]?._count?._all ?? 0,
             });
           }
         }
