@@ -33,6 +33,7 @@ export class PostsRepository {
     return await this.prisma.post.findFirst({
       where: {
         id: id,
+        deletedAt: 'FALSE',
       },
       select: {
         id: true,
@@ -56,6 +57,7 @@ export class PostsRepository {
   countPosts = async (): Promise<number> => {
     return await this.prisma.post.count({
       where: {
+        isPublic: 'TRUE',
         deletedAt: 'FALSE',
       },
     });
@@ -65,6 +67,7 @@ export class PostsRepository {
   countByCategoryPost = async () => {
     return await this.prisma.post.groupBy({
       where: {
+        isPublic: 'TRUE',
         deletedAt: 'FALSE',
       },
       by: ['category'],
