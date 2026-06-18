@@ -1,0 +1,23 @@
+model Post {
+  id String  @id @default(uuid())
+  title String @db.VarChar(300)
+  context String? @db.Text
+  // 보류 -> image 테이블로 전환 예정
+  image String?
+  isPublic State @default(TRUE) @map("is_public")
+  category Category @default(FREE)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  deletedAt State @default(FALSE) @map("deleted_at")
+
+  // one to many
+  comments Comment[]
+  likes Like[]
+
+  // many to one
+  userId String @map("user_id")
+  users  User   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map(name: "posts")
+}

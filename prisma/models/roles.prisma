@@ -1,0 +1,19 @@
+model Role {
+  id    String  @id @default(uuid())
+  authority Authority @default(USER)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  deletedAt State @default(FALSE) @map("deleted_at")
+
+  // many to one
+  userId String @map("user_id")
+  users  User   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map(name: "roles")
+}
+
+enum Authority {
+  USER
+  ADMIN
+  GUEST
+}
