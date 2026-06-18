@@ -5,7 +5,7 @@ import { CreatePostDto } from './dto/createPostDto';
 import { TPaginationDto, PaginationDto } from '../common/dto/paginationDto';
 import { RequestPostDto } from './dto/requestPostDto';
 import { Category, State } from '../../generated/prisma/enums';
-import { OrderBy } from '../common/libs/type';
+import { TUpdatePostDto, UpdatePostDto } from './dto/updatePostDto';
 
 export class PostsController {
   private readonly postsService: PostsService;
@@ -54,7 +54,19 @@ export class PostsController {
   };
 
   // 카테고리별 게시글 수 조회
-  countByCategoryPost = async (req: Request, res: Response) => {
+  countByCategoryPost = async (
+    req: Request,
+    res: Response,
+  ): Promise<
+    Response<{
+      message: string;
+      data: {
+        key: string;
+        name: string;
+        count: number;
+      }[];
+    }>
+  > => {
     return res.status(StatusCodes.OK).json({
       message: '카테고리별 게시글 수 조회 완료.',
       data: await this.postsService.countByCategoryPost(),
@@ -114,7 +126,7 @@ export class PostsController {
         context: string | null;
         category: Category;
         isPublic: State;
-        createdAt: Date;
+        createdAt: string;
         users: { nickname: string; image: string | null };
       };
     }>
@@ -122,6 +134,47 @@ export class PostsController {
     return res.status(StatusCodes.OK).json({
       message: '게시글 상세 조회 완료.',
       data: await this.postsService.findOne(req.params.id as string),
+    });
+  };
+
+  // 게시글 수정
+  update = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<
+    Response<{
+      message: string;
+    }>
+  > => {
+    await this.postsService.update(
+      req.params.id as string,
+      req.user.id as string,
+      await UpdatePostDto(req.body as TUpdatePostDto),
+    );
+
+    return res.status(StatusCodes.OK).json({
+      message: '게시글 업데이트 완료.',
+    });
+  };
+
+  // 게시글 삭제 (소프트 삭제)
+  remove = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<
+    Response<{
+      message: string;
+    }>
+  > => {
+    await this.postsService.remove(
+      req.params.id as string,
+      req.user.id as string,
+    );
+
+    return res.status(StatusCodes.OK).json({
+      message: '게시글 삭제 완료.',
     });
   };
 }

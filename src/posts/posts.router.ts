@@ -49,5 +49,13 @@ router.get(
   },
   AsyncWrapper(postsController.findOne),
 );
+// 게시글 수정
+router.patch('/:id', AuthMiddleware, AsyncWrapper(postsController.update));
+// 게시글 삭제 (소프트 삭제)
+router.patch(
+  '/remove/:id',
+  AuthMiddleware,
+  AsyncWrapper(postsController.remove),
+);
 
 export default router;

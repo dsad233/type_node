@@ -44,10 +44,15 @@ export function randomConst(): number {
 // 날짜 포맷팅 함수
 export function dateFormat(year: number, month: number, day: number): string {
   const formatterMonth = month + 1 < 10 ? '0' + (month + 1) : month + 1;
-  const formatterDay = day < 10 ? '0' + (day + 1) : day + 1;
+  const formatterDay = day < 10 ? '0' + day : day;
 
   return year + '-' + formatterMonth + '-' + formatterDay;
 }
 
 // 시간 포맷팅 함수
-export function timeFormat(hour: number, minute: number) {}
+export function timeFormat(hour: number, minute: number): string {
+  const formatterHour = hour < 10 ? '0' + hour : hour;
+  const formatterMinute = minute < 10 ? '0' + minute : minute;
+
+  return formatterHour + ':' + formatterMinute;
+}

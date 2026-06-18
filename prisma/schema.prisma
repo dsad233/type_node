@@ -11,120 +11,11 @@ generator client {
   moduleFormat           = "esm"
   generatedFileExtension = "ts"
   importFileExtension    = "ts"
-}
-
-model User {
-  id    String  @id @default(uuid()) 
-  email String  @unique @db.VarChar(254)
-  loginId String @unique @db.VarChar(13) @map("login_id")
-  password String
-  name  String @db.VarChar(50)
-  nickname String @unique @db.VarChar(32)
-  image String? 
-  gender Gender? 
-  birthDay DateTime? @db.Date @map("birth_day")
-  phoneNumber String? @unique @db.VarChar(15) @map("phone_number")
-  isPublic State @default(TRUE) @map("is_public")
-  verify State @default(FALSE)
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  deletedAt State @default(FALSE) @map("deleted_at")
-
-  // one to many
-  roles Role[]
-  posts Post[]
-  comments Comment[]
-  // Likes one to many
-
-  @@map(name: "users")
-}
-
-enum Gender { 
-  MALE 
-  FEMALE 
 } 
 
-model Role {
-  id    String  @id @default(uuid())
-  authority Authority @default(USER)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  deletedAt State @default(FALSE) @map("deleted_at")
-
-  // many to one
-  userId String @map("user_id")
-  users  User   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@map(name: "roles")
-}
-
-enum Authority {
-  USER
-  ADMIN
-  GUEST
-}
-
-model Post {
-  id String  @id @default(uuid())
-  title String @db.VarChar(300)
-  context String? @db.Text
-  image String?
-  isPublic State @default(TRUE) @map("is_public")
-  category Category @default(FREE)
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  deletedAt State @default(FALSE) @map("deleted_at")
-
-  // one to many
-  comments Comment[]
-  // Likes one to many
-
-  // many to one
-  userId String @map("user_id")
-  users  User   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@map(name: "posts")
-}
-
-model Comment {
-  id String  @id @default(uuid())
-  context String @db.Text
-  type Genre @default(POST)
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  
-  // one to many
-  //  Like
-
-  // many to one
-  userId String @map("user_id")
-  users  User   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  postId String @map("post_id")
-  posts  Post   @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@map(name: "comments")
-}
-
-model Like {
-  id String  @id @default(uuid())
-  type Genre @default(POST)
-  refId String @map("ref_id")
-  // userId
-  createdAt DateTime @default(now()) @map("created_at")
-
-  // Users many to one
-  // Posts many to one
-  // Comments many to one
-
-  @@map(name: "likes")
-}
-
-
-
-// 공통 enum
+/** 
+* 공통 enum 
+**/
 
 enum State { 
   TRUE 
@@ -140,7 +31,8 @@ enum Category {
   GAME
 }
 
-enum Genre {
+// 게시글, 댓글, 대댓글 분기 처리
+enum Type {
   // 게시글
   POST
   // 댓글

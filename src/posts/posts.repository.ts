@@ -1,7 +1,7 @@
 import { Category, PrismaClient, State } from '../../generated/prisma/client';
 import { TPaginationDto } from '../common/dto/paginationDto';
 import { dateFormat } from '../common/utils';
-import { TCreatePostDto, TRequestPostDto } from './dto';
+import { TCreatePostDto, TRequestPostDto, TUpdatePostDto } from './dto';
 
 export class PostsRepository {
   private prisma: PrismaClient;
@@ -23,6 +23,25 @@ export class PostsRepository {
     });
   };
 
+  // 게시글 ID 존재 유무 조회
+  findByPostId = async (
+    id: string,
+  ): Promise<{
+    id: string;
+    userId: string;
+  } | null> => {
+    return await this.prisma.post.findFirst({
+      where: {
+        id: id,
+        deletedAt: 'FALSE',
+      },
+      select: {
+        id: true,
+        userId: true,
+      },
+    });
+  };
+
   // 카테고리 목록 조회
   findCategory = async (): Promise<Array<string>> => {
     const categories: Array<string> = ['ALL'];
@@ -36,12 +55,21 @@ export class PostsRepository {
 
   // 게시글 수 조회
   countPosts = async (): Promise<number> => {
-    return await this.prisma.post.count();
+    return await this.prisma.post.count({
+      where: {
+        isPublic: 'TRUE',
+        deletedAt: 'FALSE',
+      },
+    });
   };
 
   // 카테고리별 게시글 수 조회
   countByCategoryPost = async () => {
     return await this.prisma.post.groupBy({
+      where: {
+        isPublic: 'TRUE',
+        deletedAt: 'FALSE',
+      },
       by: ['category'],
       _count: {
         _all: true,
@@ -63,7 +91,7 @@ export class PostsRepository {
       users: { nickname: string; image: string | null };
     }[]
   > => {
-    let where: any = {};
+    let where: any = { isPublic: 'TRUE', deletedAt: 'FALSE' };
 
     if (query.category) {
       where['category'] = query.category as Category;
@@ -133,7 +161,7 @@ export class PostsRepository {
     users: { nickname: string; image: string | null };
   } | null> => {
     return await this.prisma.post.findFirst({
-      where: { id: id },
+      where: { id: id, isPublic: 'TRUE', deletedAt: 'FALSE' },
       select: {
         id: true,
         title: true,
@@ -148,6 +176,41 @@ export class PostsRepository {
           },
         },
         //댓글 내용
+      },
+    });
+  };
+
+  // 게시글 수정
+  update = async (
+    id: string,
+    userId: string,
+    body: TUpdatePostDto,
+  ): Promise<void> => {
+    await this.prisma.post.update({
+      where: {
+        id: id,
+        userId: userId,
+      },
+      data: {
+        title: (body.title as string) ?? undefined,
+        context: (body.context as string) ?? undefined,
+        image: (body.image as string) ?? undefined,
+        isPublic: (body.isPublic as State) ?? undefined,
+        category: (body.category as Category) ?? undefined,
+      },
+    });
+  };
+
+  // 게시글 삭제 (소프트 삭제)
+  remove = async (id: string, userId: string): Promise<void> => {
+    await this.prisma.post.update({
+      where: {
+        id: id,
+        userId: userId,
+      },
+      data: {
+        isPublic: 'FALSE',
+        deletedAt: 'TRUE',
       },
     });
   };

@@ -1,0 +1,24 @@
+model Comment {
+  id String  @id @default(uuid())
+  context String @db.Text
+  type Type @default(POST)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  
+  // one to many
+  likes Like[]
+
+  // many to one
+  userId String @map("user_id")
+  users  User   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  postId String @map("post_id")
+  posts  Post   @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  // self-reference 
+  parentId String? @map("reply_id")
+  parent Comment?   @relation("replyComment", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies Comment[]   @relation("replyComment")
+
+  @@map(name: "comments")
+}
