@@ -4,6 +4,8 @@ import { PostsRepository } from './posts.repository';
 import { TPaginationDto } from '../common/dto/paginationDto';
 import { TRequestPostDto } from './dto/requestPostDto';
 import { Category, State } from '../../generated/prisma/enums';
+import { TUpdatePostDto } from './dto/updatePostDto';
+import { dateFormat, timeFormat } from '../common/utils';
 
 export class PostsService {
   private readonly postsRepository: PostsRepository;
@@ -27,7 +29,13 @@ export class PostsService {
   };
 
   // 카테고리별 게시글 수 조회
-  countByCategoryPost = async () => {
+  countByCategoryPost = async (): Promise<
+    {
+      key: string;
+      name: string;
+      count: number;
+    }[]
+  > => {
     const categoryMap: Record<string, string> = {
       FREE: '자유',
       SPORTS: '스포츠',
@@ -91,7 +99,7 @@ export class PostsService {
     context: string | null;
     category: Category;
     isPublic: State;
-    createdAt: Date;
+    createdAt: string;
     users: { nickname: string; image: string | null };
   }> => {
     const post = await this.postsRepository.findOne(id);
@@ -100,6 +108,44 @@ export class PostsService {
       throw new NotFound('게시글을 찾을 수 없습니다.');
     }
 
-    return post;
+    return {
+      id: post.id,
+      title: post.title,
+      context: post.context,
+      category: post.category,
+      isPublic: post.isPublic,
+      createdAt:
+        dateFormat(
+          post.createdAt.getFullYear(),
+          post.createdAt.getMonth(),
+          post.createdAt.getDate(),
+        ) +
+        ' ' +
+        timeFormat(post.createdAt.getHours(), post.createdAt.getMinutes()),
+      users: {
+        nickname: post.users.nickname,
+        image: post.users.image,
+      },
+    };
+  };
+
+  // 게시글 수정
+  update = async (
+    id: string,
+    userId: string,
+    body: TUpdatePostDto,
+  ): Promise<void> => {
+    const post = await this.postsRepository.findByPostId(id);
+
+    if (!post || post.userId !== userId) {
+      throw new NotFound('게시글을 찾을 수 없습니다.');
+    }
+
+    await this.postsRepository.update(userId, id, body);
+  };
+
+  // 게시글 삭제 (소프트 삭제)
+  remove = async (id: string, userId: string): Promise<void> => {
+    await this.postsRepository.remove(id, userId);
   };
 }

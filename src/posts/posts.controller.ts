@@ -5,7 +5,7 @@ import { CreatePostDto } from './dto/createPostDto';
 import { TPaginationDto, PaginationDto } from '../common/dto/paginationDto';
 import { RequestPostDto } from './dto/requestPostDto';
 import { Category, State } from '../../generated/prisma/enums';
-import { OrderBy } from '../common/libs/type';
+import { TUpdatePostDto, UpdatePostDto } from './dto/updatePostDto';
 
 export class PostsController {
   private readonly postsService: PostsService;
@@ -54,7 +54,19 @@ export class PostsController {
   };
 
   // 카테고리별 게시글 수 조회
-  countByCategoryPost = async (req: Request, res: Response) => {
+  countByCategoryPost = async (
+    req: Request,
+    res: Response,
+  ): Promise<
+    Response<{
+      message: string;
+      data: {
+        key: string;
+        name: string;
+        count: number;
+      }[];
+    }>
+  > => {
     return res.status(StatusCodes.OK).json({
       message: '카테고리별 게시글 수 조회 완료.',
       data: await this.postsService.countByCategoryPost(),
@@ -114,7 +126,7 @@ export class PostsController {
         context: string | null;
         category: Category;
         isPublic: State;
-        createdAt: Date;
+        createdAt: string;
         users: { nickname: string; image: string | null };
       };
     }>

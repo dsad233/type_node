@@ -50,4 +50,9 @@ export function dateFormat(year: number, month: number, day: number): string {
 }
 
 // 시간 포맷팅 함수
-export function timeFormat(hour: number, minute: number) {}
+export function timeFormat(hour: number, minute: number): string {
+  const formatterHour = hour < 10 ? '0' + hour : hour;
+  const formatterMinute = minute < 10 ? '0' + minute : minute;
+
+  return formatterHour + ':' + formatterMinute;
+}

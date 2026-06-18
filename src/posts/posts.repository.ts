@@ -36,12 +36,19 @@ export class PostsRepository {
 
   // 게시글 수 조회
   countPosts = async (): Promise<number> => {
-    return await this.prisma.post.count();
+    return await this.prisma.post.count({
+      where: {
+        deletedAt: 'FALSE',
+      },
+    });
   };
 
   // 카테고리별 게시글 수 조회
   countByCategoryPost = async () => {
     return await this.prisma.post.groupBy({
+      where: {
+        deletedAt: 'FALSE',
+      },
       by: ['category'],
       _count: {
         _all: true,
@@ -63,7 +70,7 @@ export class PostsRepository {
       users: { nickname: string; image: string | null };
     }[]
   > => {
-    let where: any = {};
+    let where: any = { isPublic: 'TRUE', deletedAt: 'FALSE' };
 
     if (query.category) {
       where['category'] = query.category as Category;
@@ -133,7 +140,7 @@ export class PostsRepository {
     users: { nickname: string; image: string | null };
   } | null> => {
     return await this.prisma.post.findFirst({
-      where: { id: id },
+      where: { id: id, isPublic: 'TRUE', deletedAt: 'FALSE' },
       select: {
         id: true,
         title: true,
