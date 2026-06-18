@@ -136,4 +136,45 @@ export class PostsController {
       data: await this.postsService.findOne(req.params.id as string),
     });
   };
+
+  // 게시글 수정
+  update = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<
+    Response<{
+      message: string;
+    }>
+  > => {
+    await this.postsService.update(
+      req.params.id as string,
+      req.user.id as string,
+      await UpdatePostDto(req.body as TUpdatePostDto),
+    );
+
+    return res.status(StatusCodes.OK).json({
+      message: '게시글 업데이트 완료.',
+    });
+  };
+
+  // 게시글 삭제 (소프트 삭제)
+  remove = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<
+    Response<{
+      message: string;
+    }>
+  > => {
+    await this.postsService.remove(
+      req.params.id as string,
+      req.user.id as string,
+    );
+
+    return res.status(StatusCodes.OK).json({
+      message: '게시글 삭제 완료.',
+    });
+  };
 }
