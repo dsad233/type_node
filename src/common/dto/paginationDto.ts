@@ -3,10 +3,10 @@ export type TPaginationDto = {
   pages: string;
 };
 
-export async function PaginationDto(
-  query: TPaginationDto,
-): Promise<TPaginationDto> {
-  const { page, pages } = query;
+export async function PaginationDto({
+  page,
+  pages,
+}: TPaginationDto): Promise<TPaginationDto> {
   return {
     page: page ?? '1',
     pages: pages ?? '10',

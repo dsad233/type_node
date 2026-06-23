@@ -88,6 +88,7 @@ export class PostsController {
           category: string;
           createdAt: string;
           users: { nickname: string; image: string | null };
+          comments: number;
         }[];
         paginations: {
           page: string;
@@ -128,6 +129,12 @@ export class PostsController {
         isPublic: State;
         createdAt: string;
         users: { nickname: string; image: string | null };
+        comments: {
+          id: string;
+          context: string;
+          createdAt: string;
+          author: { nickname: string; image: string | null };
+        }[];
       };
     }>
   > => {
