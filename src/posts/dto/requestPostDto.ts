@@ -7,10 +7,12 @@ export type TRequestPostDto = {
   orderby: string;
 };
 
-export async function RequestPostDto(
-  query: TRequestPostDto,
-): Promise<TRequestPostDto> {
-  const { search, category, isPublic, orderby } = query;
+export async function RequestPostDto({
+  search,
+  category,
+  isPublic,
+  orderby,
+}: TRequestPostDto): Promise<TRequestPostDto> {
   if (!isPublic) {
     throw new NotFound(
       'isPublic 파라미터 값이 존재하지 않습니다. 다시 요청해 주세요.',
