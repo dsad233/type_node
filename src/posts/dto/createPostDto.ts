@@ -9,9 +9,13 @@ export type TCreatePostDto = {
   category: Category;
 };
 
-export async function CreatePostDto(body: TCreatePostDto) {
-  const { title, context, image, isPublic, category } = body;
-
+export async function CreatePostDto({
+  title,
+  context,
+  image,
+  isPublic,
+  category,
+}: TCreatePostDto) {
   if (!title) {
     throw new BadRequest('게시글 제목을 입력해 주세요.');
   }

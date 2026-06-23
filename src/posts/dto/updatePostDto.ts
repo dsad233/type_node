@@ -9,11 +9,13 @@ export type TUpdatePostDto = {
   category?: Category | undefined;
 };
 
-export async function UpdatePostDto(
-  body: TUpdatePostDto,
-): Promise<TUpdatePostDto> {
-  const { title, context, image, isPublic, category } = body;
-
+export async function UpdatePostDto({
+  title,
+  context,
+  image,
+  isPublic,
+  category,
+}: TUpdatePostDto): Promise<TUpdatePostDto> {
   if (!title && !context && !image && !isPublic && !category) {
     throw new BadRequest('업데이트 내용이 없습니다. 다시 시도해주세요.');
   }

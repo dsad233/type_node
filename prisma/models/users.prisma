@@ -9,6 +9,7 @@ model User {
   gender Gender? 
   birthDay DateTime? @db.Date @map("birth_day")
   phoneNumber String? @unique @db.VarChar(15) @map("phone_number")
+  address String? @db.VarChar(100)
   isPublic State @default(TRUE) @map("is_public")
   verify State @default(FALSE)
 

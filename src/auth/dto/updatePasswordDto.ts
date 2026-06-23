@@ -6,11 +6,10 @@ export type TUpdatePassowrdDto = {
   newConfirmPassword: string;
 };
 
-export async function UpdatePassowrdDto(
-  body: TUpdatePassowrdDto,
-): Promise<TUpdatePassowrdDto> {
-  const { newPassowrd, newConfirmPassword } = body;
-
+export async function UpdatePassowrdDto({
+  newPassowrd,
+  newConfirmPassword,
+}: TUpdatePassowrdDto): Promise<TUpdatePassowrdDto> {
   if (!newPassowrd) {
     throw new BadRequest('변경 예정인 패스워드를 입력해 주세요.');
   }

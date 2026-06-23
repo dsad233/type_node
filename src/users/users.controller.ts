@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { UsersService } from './users.service';
-import { RequestUserDto, IRequestUserDto } from './dto';
+import { RequestUserDto } from './dto';
 
 export class UsersController {
   private usersService: UsersService;
@@ -26,7 +26,7 @@ export class UsersController {
     res: Response,
   ): Promise<Response<{ message: string; data: string }>> => {
     const user = await this.usersService.findOne(
-      (await RequestUserDto(req.user as IRequestUserDto)).id,
+      await RequestUserDto(req.user.id as string),
     );
     return res
       .status(StatusCodes.OK)
