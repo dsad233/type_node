@@ -75,6 +75,7 @@ export class PostsService {
       category: string;
       createdAt: string;
       users: { nickname: string; image: string | null };
+      comments: number;
     }[];
     paginations: {
       page: string;
@@ -101,6 +102,12 @@ export class PostsService {
     isPublic: State;
     createdAt: string;
     users: { nickname: string; image: string | null };
+    comments: {
+      id: string;
+      context: string;
+      createdAt: string;
+      author: { nickname: string; image: string | null };
+    }[];
   }> => {
     const post = await this.postsRepository.findOne(id);
 
@@ -126,6 +133,21 @@ export class PostsService {
         nickname: post.users.nickname,
         image: post.users.image,
       },
+      comments: post.comments.map((comment) => {
+        return {
+          id: comment?.id,
+          context: comment?.context,
+          createdAt: dateFormat(
+            comment?.createdAt.getFullYear(),
+            comment?.createdAt.getMonth(),
+            comment?.createdAt.getDate(),
+          ),
+          author: {
+            nickname: comment?.users?.nickname,
+            image: comment?.users?.image,
+          },
+        };
+      }),
     };
   };
 

@@ -89,6 +89,7 @@ export class PostsRepository {
       category: string;
       createdAt: string;
       users: { nickname: string; image: string | null };
+      comments: number;
     }[]
   > => {
     let where: any = { isPublic: 'TRUE', deletedAt: 'FALSE' };
@@ -124,6 +125,11 @@ export class PostsRepository {
               image: true,
             },
           },
+          _count: {
+            select: {
+              comments: true,
+            },
+          },
         },
         orderBy,
         skip: (Number(paginations.page) - 1) * Number(paginations.pages),
@@ -144,6 +150,7 @@ export class PostsRepository {
           nickname: post?.users.nickname,
           image: post?.users.image,
         },
+        comments: post?._count.comments ?? 0,
       };
     });
   };
@@ -159,6 +166,12 @@ export class PostsRepository {
     isPublic: State;
     createdAt: Date;
     users: { nickname: string; image: string | null };
+    comments: {
+      id: string;
+      context: string;
+      createdAt: Date;
+      users: { nickname: string; image: string | null };
+    }[];
   } | null> => {
     return await this.prisma.post.findFirst({
       where: { id: id, isPublic: 'TRUE', deletedAt: 'FALSE' },
@@ -176,6 +189,22 @@ export class PostsRepository {
           },
         },
         //댓글 내용
+        comments: {
+          select: {
+            id: true,
+            context: true,
+            createdAt: true,
+            users: {
+              select: {
+                nickname: true,
+                image: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: 'asc',
+          },
+        },
       },
     });
   };
