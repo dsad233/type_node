@@ -2,6 +2,7 @@ import { NotFound } from 'http-errors';
 import { UsersRepository } from './users.repository';
 import { State } from '../../generated/prisma/enums';
 import { dateFormat } from '../common/utils';
+import { TRequestUserDto } from './dto';
 export class UsersService {
   private readonly usersRepository: UsersRepository;
   constructor(usersRepository: UsersRepository) {
@@ -14,9 +15,9 @@ export class UsersService {
   };
 
   // 유저 상세 조회
-  findOne = async (
-    id: string,
-  ): Promise<{
+  findOne = async ({
+    id,
+  }: TRequestUserDto): Promise<{
     id: string;
     email: string;
     nickname: string;
