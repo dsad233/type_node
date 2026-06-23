@@ -6,11 +6,10 @@ export type TUpdatePasswordRequestDto = {
   token: string;
 };
 
-export async function UpdatePasswordRequestDto(
-  query: TUpdatePasswordRequestDto,
-) {
-  const { email, token } = query;
-
+export async function UpdatePasswordRequestDto({
+  email,
+  token,
+}: TUpdatePasswordRequestDto) {
   if (!email) {
     throw new BadRequest('이메일 데이터가 누락되었습니다. 다시 요청해 주세요.');
   }

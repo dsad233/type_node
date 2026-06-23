@@ -13,27 +13,26 @@ type TCreateUserDto = {
   gender?: Gender | undefined;
   birthDay?: Date | undefined;
   phoneNumber?: string | undefined;
+  address?: string | undefined;
   isPublic: State;
 };
 
 export type OmitTCreateUserDto = Omit<TCreateUserDto, 'confirmPassword'>;
 
-export async function CreateUserDto(
-  body: TCreateUserDto,
-): Promise<OmitTCreateUserDto> {
-  const {
-    email,
-    loginId,
-    password,
-    confirmPassword,
-    name,
-    nickname,
-    image,
-    gender,
-    birthDay,
-    phoneNumber,
-    isPublic,
-  } = body;
+export async function CreateUserDto({
+  email,
+  loginId,
+  password,
+  confirmPassword,
+  name,
+  nickname,
+  image,
+  gender,
+  birthDay,
+  phoneNumber,
+  address,
+  isPublic,
+}: TCreateUserDto): Promise<OmitTCreateUserDto> {
   // 입력 유무 검증
   if (!email) {
     throw new BadRequest('이메일을 입력해 주세요.');
@@ -125,6 +124,12 @@ export async function CreateUserDto(
     }
   }
 
+  if (address) {
+    if (address?.trim().length < 1 || address?.trim().length > 100) {
+      throw new BadRequest('주소는 2자 이상 100자 이하로 입력해 주세요.');
+    }
+  }
+
   return {
     email: email.trim(),
     loginId: loginId.trim(),
@@ -135,6 +140,7 @@ export async function CreateUserDto(
     gender: gender,
     birthDay: birthDay ? new Date(birthDay) : undefined,
     phoneNumber: phoneNumber?.trim(),
+    address: address?.trim(),
     isPublic: isPublic,
   };
 }

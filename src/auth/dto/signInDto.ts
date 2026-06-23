@@ -6,8 +6,10 @@ export type TSignInDto = {
   password: string;
 };
 
-export async function SignInDto(body: TSignInDto): Promise<TSignInDto> {
-  const { loginId, password } = body;
+export async function SignInDto({
+  loginId,
+  password,
+}: TSignInDto): Promise<TSignInDto> {
   // 입력 유무 검증
   if (!loginId) {
     throw new BadRequest('이메일이나 아이디를 입력해 주세요.');
