@@ -134,6 +134,12 @@ export class PostsController {
           context: string;
           createdAt: string;
           author: { nickname: string; image: string | null };
+          replies: {
+            id: string;
+            context: string;
+            createdAt: string;
+            author: { nickname: string; image: string | null };
+          }[];
         }[];
       };
     }>

@@ -171,6 +171,12 @@ export class PostsRepository {
       context: string;
       createdAt: Date;
       users: { nickname: string; image: string | null };
+      replies: {
+        id: string;
+        context: string;
+        createdAt: Date;
+        users: { nickname: string; image: string | null };
+      }[];
     }[];
   } | null> => {
     return await this.prisma.post.findFirst({
@@ -188,8 +194,10 @@ export class PostsRepository {
             image: true,
           },
         },
-        //댓글 내용
         comments: {
+          where: {
+            parentId: null,
+          },
           select: {
             id: true,
             context: true,
@@ -198,6 +206,22 @@ export class PostsRepository {
               select: {
                 nickname: true,
                 image: true,
+              },
+            },
+            replies: {
+              select: {
+                id: true,
+                context: true,
+                createdAt: true,
+                users: {
+                  select: {
+                    nickname: true,
+                    image: true,
+                  },
+                },
+              },
+              orderBy: {
+                createdAt: 'asc',
               },
             },
           },
