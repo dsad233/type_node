@@ -107,6 +107,12 @@ export class PostsService {
       context: string;
       createdAt: string;
       author: { nickname: string; image: string | null };
+      replies: {
+        id: string;
+        context: string;
+        createdAt: string;
+        author: { nickname: string; image: string | null };
+      }[];
     }[];
   }> => {
     const post = await this.postsRepository.findOne(id);
@@ -146,6 +152,21 @@ export class PostsService {
             nickname: comment?.users?.nickname,
             image: comment?.users?.image,
           },
+          replies: comment.replies.map((reply) => {
+            return {
+              id: reply?.id,
+              context: reply?.context,
+              createdAt: dateFormat(
+                reply?.createdAt.getFullYear(),
+                reply?.createdAt.getMonth(),
+                reply?.createdAt.getDate(),
+              ),
+              author: {
+                nickname: reply?.users?.nickname,
+                image: reply?.users?.image,
+              },
+            };
+          }),
         };
       }),
     };
