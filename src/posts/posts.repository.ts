@@ -194,7 +194,6 @@ export class PostsRepository {
             image: true,
           },
         },
-        //댓글 내용
         comments: {
           where: {
             parentId: null,
@@ -220,6 +219,9 @@ export class PostsRepository {
                     image: true,
                   },
                 },
+              },
+              orderBy: {
+                createdAt: 'asc',
               },
             },
           },
