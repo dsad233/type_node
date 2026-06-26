@@ -103,10 +103,10 @@ export class PostsService {
     createdAt: string;
     users: { nickname: string; image: string | null };
     comments: {
-      id: string;
+      id: string | null;
       context: string;
-      createdAt: string;
-      author: { nickname: string; image: string | null };
+      createdAt: string | null;
+      author: { nickname: string; image: string | null } | null;
       replies: {
         id: string;
         context: string;
@@ -141,17 +141,26 @@ export class PostsService {
       },
       comments: post.comments.map((comment) => {
         return {
-          id: comment?.id,
-          context: comment?.context,
-          createdAt: dateFormat(
-            comment?.createdAt.getFullYear(),
-            comment?.createdAt.getMonth(),
-            comment?.createdAt.getDate(),
-          ),
-          author: {
-            nickname: comment?.users?.nickname,
-            image: comment?.users?.image,
-          },
+          id: comment.deletedAt !== 'TRUE' ? comment?.id : null,
+          context:
+            comment.deletedAt !== 'TRUE'
+              ? comment?.context
+              : '삭제된 댓글 입니다.',
+          createdAt:
+            comment.deletedAt !== 'TRUE'
+              ? dateFormat(
+                  comment?.createdAt.getFullYear(),
+                  comment?.createdAt.getMonth(),
+                  comment?.createdAt.getDate(),
+                )
+              : null,
+          author:
+            comment.deletedAt !== 'TRUE'
+              ? {
+                  nickname: comment?.users?.nickname,
+                  image: comment?.users?.image,
+                }
+              : null,
           replies: comment.replies.map((reply) => {
             return {
               id: reply?.id,
