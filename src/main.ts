@@ -2,6 +2,7 @@ import express, { Express, Request, Response, NextFunction } from 'express';
 import AuthRouter from './auth/auth.router';
 import UsersRouter from './users/users.router';
 import PostsRouter from './posts/posts.router';
+import CommentsRouter from './comments/comments.router';
 
 import ErrorMiddleware from './common/middlewares/errorMiddleware';
 
@@ -28,6 +29,7 @@ app.use(MorganMiddleware());
 app.use('/auth', AuthRouter);
 app.use('/users', UsersRouter);
 app.use('/posts', PostsRouter);
+app.use('/posts', CommentsRouter);
 
 app.use((error: HttpError, req: Request, res: Response, next: NextFunction) =>
   ErrorMiddleware(error, req, res, next),
