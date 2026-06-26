@@ -103,10 +103,10 @@ export class PostsService {
     createdAt: string;
     users: { nickname: string; image: string | null };
     comments: {
-      id: string;
+      id: string | null;
       context: string;
-      createdAt: string;
-      author: { nickname: string; image: string | null };
+      createdAt: string | null;
+      author: { nickname: string; image: string | null } | null;
       replies: {
         id: string;
         context: string;
@@ -140,18 +140,23 @@ export class PostsService {
         image: post.users.image,
       },
       comments: post.comments.map((comment) => {
+        const notDeleted = comment.deletedAt !== 'TRUE';
         return {
-          id: comment?.id,
-          context: comment?.context,
-          createdAt: dateFormat(
-            comment?.createdAt.getFullYear(),
-            comment?.createdAt.getMonth(),
-            comment?.createdAt.getDate(),
-          ),
-          author: {
-            nickname: comment?.users?.nickname,
-            image: comment?.users?.image,
-          },
+          id: notDeleted ? comment?.id : null,
+          context: notDeleted ? comment?.context : '삭제된 댓글 입니다.',
+          createdAt: notDeleted
+            ? dateFormat(
+                comment?.createdAt.getFullYear(),
+                comment?.createdAt.getMonth(),
+                comment?.createdAt.getDate(),
+              )
+            : null,
+          author: notDeleted
+            ? {
+                nickname: comment?.users?.nickname,
+                image: comment?.users?.image,
+              }
+            : null,
           replies: comment.replies.map((reply) => {
             return {
               id: reply?.id,

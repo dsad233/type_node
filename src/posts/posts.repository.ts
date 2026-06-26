@@ -170,6 +170,7 @@ export class PostsRepository {
       id: string;
       context: string;
       createdAt: Date;
+      deletedAt: State;
       users: { nickname: string; image: string | null };
       replies: {
         id: string;
@@ -202,6 +203,7 @@ export class PostsRepository {
             id: true,
             context: true,
             createdAt: true,
+            deletedAt: true,
             users: {
               select: {
                 nickname: true,
@@ -209,6 +211,9 @@ export class PostsRepository {
               },
             },
             replies: {
+              where: {
+                deletedAt: 'FALSE',
+              },
               select: {
                 id: true,
                 context: true,
