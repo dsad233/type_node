@@ -130,10 +130,10 @@ export class PostsController {
         createdAt: string;
         users: { nickname: string; image: string | null };
         comments: {
-          id: string;
+          id: string | null;
           context: string;
-          createdAt: string;
-          author: { nickname: string; image: string | null };
+          createdAt: string | null;
+          author: { nickname: string; image: string | null } | null;
           replies: {
             id: string;
             context: string;

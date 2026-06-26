@@ -140,27 +140,23 @@ export class PostsService {
         image: post.users.image,
       },
       comments: post.comments.map((comment) => {
+        const notDeleted = comment.deletedAt !== 'TRUE';
         return {
-          id: comment.deletedAt !== 'TRUE' ? comment?.id : null,
-          context:
-            comment.deletedAt !== 'TRUE'
-              ? comment?.context
-              : '삭제된 댓글 입니다.',
-          createdAt:
-            comment.deletedAt !== 'TRUE'
-              ? dateFormat(
-                  comment?.createdAt.getFullYear(),
-                  comment?.createdAt.getMonth(),
-                  comment?.createdAt.getDate(),
-                )
-              : null,
-          author:
-            comment.deletedAt !== 'TRUE'
-              ? {
-                  nickname: comment?.users?.nickname,
-                  image: comment?.users?.image,
-                }
-              : null,
+          id: notDeleted ? comment?.id : null,
+          context: notDeleted ? comment?.context : '삭제된 댓글 입니다.',
+          createdAt: notDeleted
+            ? dateFormat(
+                comment?.createdAt.getFullYear(),
+                comment?.createdAt.getMonth(),
+                comment?.createdAt.getDate(),
+              )
+            : null,
+          author: notDeleted
+            ? {
+                nickname: comment?.users?.nickname,
+                image: comment?.users?.image,
+              }
+            : null,
           replies: comment.replies.map((reply) => {
             return {
               id: reply?.id,
