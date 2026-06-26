@@ -54,6 +54,7 @@ export class CommentsRepository {
     return await this.prisma.post.findFirst({
       where: {
         id: id,
+        deletedAt: 'FALSE',
       },
       select: {
         id: true,
@@ -64,24 +65,19 @@ export class CommentsRepository {
   // 게시글 댓글 존재 유무 조회
   findByCommentId = async (
     id: string,
+    commentId: string,
   ): Promise<{
     id: string;
   } | null> => {
     return await this.prisma.comment.findFirst({
       where: {
         postId: id,
+        id: commentId,
+        parentId: null,
+        deletedAt: 'FALSE',
       },
       select: {
         id: true,
-      },
-    });
-  };
-
-  // 게시글 댓글 개수 조회
-  countPostComment = async (id: string): Promise<number> => {
-    return await this.prisma.comment.count({
-      where: {
-        postId: id,
       },
     });
   };
@@ -98,6 +94,8 @@ export class CommentsRepository {
         postId: params.id,
         id: params.commentId,
         userId: userId,
+        parentId: null,
+        deletedAt: 'FALSE',
       },
       select: {
         id: true,
@@ -118,6 +116,7 @@ export class CommentsRepository {
         id: params.commentId,
         parentId: params.replyId,
         userId: userId,
+        deletedAt: 'FALSE',
       },
       select: {
         id: true,
@@ -136,6 +135,8 @@ export class CommentsRepository {
         postId: params.id,
         id: params.commentId,
         userId: userId,
+        parentId: null,
+        deletedAt: 'FALSE',
       },
       data: {
         context: body.context,
@@ -155,6 +156,7 @@ export class CommentsRepository {
         id: params.commentId,
         parentId: params.replyId,
         userId: userId,
+        deletedAt: 'FALSE',
       },
       data: {
         context: body.context,
@@ -172,6 +174,8 @@ export class CommentsRepository {
         postId: params.id,
         id: params.commentId,
         userId: userId,
+        parentId: null,
+        deletedAt: 'FALSE',
       },
       data: {
         deletedAt: 'TRUE',
@@ -190,6 +194,7 @@ export class CommentsRepository {
         id: params.commentId,
         parentId: params.replyId,
         userId: userId,
+        deletedAt: 'FALSE',
       },
       data: {
         deletedAt: 'TRUE',

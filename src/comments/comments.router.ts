@@ -1,7 +1,7 @@
 import express from 'express';
 import { prisma } from '../common/configs/prisma-client';
 
-import { CommentsRepository } from './commnets.repository';
+import { CommentsRepository } from './comments.repository';
 import { CommentsService } from './comments.service';
 import { CommentsController } from './comments.controller';
 import AsyncWrapper from '../common/middlewares/asyncWrapper';
@@ -24,11 +24,6 @@ router.post(
   '/:id/comments/:commentId',
   AuthMiddleware,
   AsyncWrapper(commentsController.replyCreate),
-);
-// 게시글 댓글 수 조회
-router.get(
-  '/:id/comments/count',
-  AsyncWrapper(commentsController.countPostComment),
 );
 // 댓글 수정
 router.patch(

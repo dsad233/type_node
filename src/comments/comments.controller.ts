@@ -54,19 +54,6 @@ export class CommentsController {
     });
   };
 
-  // 게시글 댓글 수 조회
-  countPostComment = async (
-    req: Request,
-    res: Response,
-  ): Promise<Response<{ message: string; count: number }>> => {
-    return res.status(StatusCodes.OK).json({
-      message: '게시글 댓글 수 조회 완료.',
-      count: await this.commentsService.countPostComment(
-        await RequestCommentCreateDto(req.params.id as string),
-      ),
-    });
-  };
-
   // 댓글 수정
   update = async (
     req: Request,

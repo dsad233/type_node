@@ -1,5 +1,5 @@
 import { NotFound } from 'http-errors';
-import { CommentsRepository } from './commnets.repository';
+import { CommentsRepository } from './comments.repository';
 import {
   TCreateCommentDto,
   TRequestReplyCommentCreateDto,
@@ -43,6 +43,7 @@ export class CommentsService {
     }
 
     const comment = await this.commentsRepository.findByCommentId(
+      params.id,
       params.commentId,
     );
 
@@ -51,25 +52,6 @@ export class CommentsService {
     }
 
     await this.commentsRepository.replyCreate(params, userId, body);
-  };
-
-  // 게시글 댓글 수 조회
-  countPostComment = async ({
-    id,
-  }: TRequestCommentCreateDto): Promise<number> => {
-    const post = await this.commentsRepository.findByPostId(id);
-
-    if (!post) {
-      throw new NotFound('게시글을 찾을 수 없습니다.');
-    }
-
-    const comment = await this.commentsRepository.findByCommentId(id);
-
-    if (!comment) {
-      throw new NotFound('해당 댓글을 찾을 수 없습니다.');
-    }
-
-    return await this.commentsRepository.countPostComment(id);
   };
 
   // 댓글 수정
