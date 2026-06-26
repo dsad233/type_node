@@ -5,6 +5,7 @@ model Comment {
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  deletedAt State @default(FALSE) @map("deleted_at")
   
   // one to many
   likes Like[]
@@ -17,8 +18,8 @@ model Comment {
 
   // self-reference 
   parentId String? @map("reply_id")
-  parent Comment?   @relation("replyComment", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  replies Comment[]   @relation("replyComment")
+  parent Comment?   @relation(name: "replyComment", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies Comment[]   @relation(name: "replyComment")
 
   @@map(name: "comments")
 }

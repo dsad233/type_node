@@ -1,0 +1,12 @@
+export { CreateCommentDto } from './createCommentDto';
+export type { TCreateCommentDto } from './createCommentDto';
+export { RequestCommentCreateDto } from './requestCommentCreateDto';
+export type { TRequestCommentCreateDto } from './requestCommentCreateDto';
+export { RequestReplyCommentCreateDto } from './requestReplyCommentCreateDto';
+export type { TRequestReplyCommentCreateDto } from './requestReplyCommentCreateDto';
+export { RequestCommentUpdateDto } from './requestCommentUpdateDto';
+export type { TRequestCommentUpdateDto } from './requestCommentUpdateDto';
+export { RequestReplyCommentUpdateDto } from './requestReplyCommentUpdateDto';
+export type { TRequestReplyCommentUpdateDto } from './requestReplyCommentUpdateDto';
+export { UpdateCommentDto } from './updateCommentDto';
+export type { TUpdateCommentDto } from './updateCommentDto';
