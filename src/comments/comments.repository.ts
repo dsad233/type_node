@@ -40,7 +40,7 @@ export class CommentsRepository {
         postId: params.id,
         userId: userId,
         context: body.context,
-        parentId: params.commentId as string,
+        parentId: params.commentId,
       },
     });
   };

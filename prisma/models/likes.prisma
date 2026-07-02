@@ -1,7 +1,6 @@
 model Like {
   id String  @id @default(uuid())
   type Type @default(POST)
-  refId String @map("ref_id")
   createdAt DateTime @default(now()) @map("created_at")
 
   // many to one
@@ -11,6 +10,8 @@ model Like {
   posts  Post   @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   commentId String? @map("comment_id")
   comments  Comment?   @relation(fields: [commentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replyId String? @map("reply_id")
+  replies  Comment? @relation(name: "replyLikes", fields: [replyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map(name: "likes")
 }

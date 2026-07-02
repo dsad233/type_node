@@ -1,4 +1,4 @@
-import { NotFound } from 'http-errors';
+import { BadRequest } from 'http-errors';
 
 export type TRequestPostDto = {
   search?: string | null;
@@ -14,13 +14,13 @@ export async function RequestPostDto({
   orderby,
 }: TRequestPostDto): Promise<TRequestPostDto> {
   if (!isPublic) {
-    throw new NotFound(
+    throw new BadRequest(
       'isPublic 파라미터 값이 존재하지 않습니다. 다시 요청해 주세요.',
     );
   }
 
   if (!orderby) {
-    throw new NotFound(
+    throw new BadRequest(
       'orderby 파라미터 값이 존재하지 않습니다. 다시 요청해 주세요.',
     );
   }

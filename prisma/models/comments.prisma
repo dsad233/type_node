@@ -9,6 +9,7 @@ model Comment {
   
   // one to many
   likes Like[]
+  replyLikes Like[] @relation(name: "replyLikes")
 
   // many to one
   userId String @map("user_id")
@@ -17,7 +18,7 @@ model Comment {
   posts  Post   @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   // self-reference 
-  parentId String? @map("reply_id")
+  parentId String? @map("parent_id")
   parent Comment?   @relation(name: "replyComment", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   replies Comment[]   @relation(name: "replyComment")
 
