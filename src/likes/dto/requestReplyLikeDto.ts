@@ -1,4 +1,4 @@
-import { NotFound, BadRequest } from 'http-errors';
+import { BadRequest } from 'http-errors';
 import { regEx } from '../../common/utils';
 
 export type TRequestReplyLikeDto = {
@@ -13,7 +13,7 @@ export async function RequestReplyLikeDto({
   replyId,
 }: TRequestReplyLikeDto): Promise<TRequestReplyLikeDto> {
   if (!id) {
-    throw new NotFound('게시글 ID가 존재하지 않습니다. 다시 시도 해주세요.');
+    throw new BadRequest('게시글 ID가 존재하지 않습니다. 다시 시도 해주세요.');
   }
 
   if (!commentId) {

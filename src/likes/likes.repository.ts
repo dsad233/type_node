@@ -50,7 +50,11 @@ export class LikesRepository {
 
   // 좋아요 ID 조회
   findById = async (
-    params: any,
+    params: {
+      id: string;
+      commentId: string;
+      replyId: string;
+    },
     type: Type,
     userId: string,
   ): Promise<{ id: string } | null> => {
@@ -77,6 +81,7 @@ export class LikesRepository {
     return await this.prisma.post.findFirst({
       where: {
         id: id,
+        deletedAt: 'FALSE',
       },
       select: {
         id: true,
@@ -92,6 +97,7 @@ export class LikesRepository {
       where: {
         postId: params.id,
         id: params.commentId,
+        deletedAt: 'FALSE',
       },
       select: {
         id: true,
@@ -108,6 +114,7 @@ export class LikesRepository {
         postId: params.id,
         id: params.replyId,
         parentId: params.commentId,
+        deletedAt: 'FALSE',
       },
       select: {
         id: true,
@@ -148,7 +155,7 @@ export class LikesRepository {
 
   // 대댓글 좋아요 삭제
   deleteReply = async (
-    params: any,
+    params: TRequestReplyLikeDto,
     likeId: string,
     userId: string,
   ): Promise<void> => {
